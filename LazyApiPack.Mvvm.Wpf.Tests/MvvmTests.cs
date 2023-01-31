@@ -1,8 +1,8 @@
 using Brainstorm.Mvvm;
+using Brainstorm.Mvvm.Wpf;
 using LazyApiPack.Mvvm.Tests.Services;
-using LazyApiPack.Mvvm.Wpf;
 
-namespace LazyApiPack.Mvvm.Tests
+namespace LazyApiPack.Mvvm.Wpf.Tests
 {
     public class Tests
     {
@@ -22,12 +22,13 @@ namespace LazyApiPack.Mvvm.Tests
           
             var messageService = AppNavigation.Instance.GetService<IMessageService>();
             Assert.NotNull(messageService);
+            messageService.ShowMessage("Test", "Baum");
             var popupService = AppNavigation.Instance.GetService<IPopupService>();
             Assert.NotNull(popupService);
 
             var logService = AppNavigation.Instance.GetService<ILogService>();
             Assert.NotNull(logService);
-
+            Assert.That(logService.GetLog() == "Baum\nTest\n");
             Assert.Pass();
         }
     }

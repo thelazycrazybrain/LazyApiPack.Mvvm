@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Security.AccessControl;
 
-namespace Brainstorm.Mvvm
+namespace LazyApiPack.Mvvm.Wpf
 {
     public class AppService : IDisposable
     {
@@ -59,24 +58,7 @@ namespace Brainstorm.Mvvm
                     $"Can not create a default instance of the service because the implementation type is unknown.");
             }
 
-            var ctor = _implementationType.GetConstructors().First();
-            var cparams = ctor.GetParameters();
-            var instances = new object[cparams.Length];
-            for (int i = 0; i < cparams.Length; i++)
-            {
-                try
-                {
-                    instances[i] = MvvmNavigation.Instance.GetService(cparams[i].ParameterType);
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException(
-                        $"Can not create an instance of the service '{_implementationType.FullName}' because one of its dependent services ('{cparams[i].ParameterType.FullName}') could not be created.", ex);
-
-                }
-            }
-
-            return ctor.Invoke(instances);
+            return AppNavigation.Instance.CreateObjectWithDependencyInjection(_implementationType);
 
         }
 
@@ -106,6 +88,7 @@ namespace Brainstorm.Mvvm
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
         ~AppService()
         {

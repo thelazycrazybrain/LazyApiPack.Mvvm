@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Brainstorm.Mvvm
+namespace LazyApiPack.Mvvm.Wpf
 {
     public class ServiceConfiguration
     {

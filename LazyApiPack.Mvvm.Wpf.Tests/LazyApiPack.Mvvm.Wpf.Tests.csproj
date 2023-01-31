@@ -18,13 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="ViewModels\" />
-		<Folder Include="Views\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\LazyApiPack.Mvvm.Wpf\LazyApiPack.Mvvm.Wpf.csproj" />
-		<ProjectReference Include="..\LazyApiPack.Mvvm\LazyApiPack.Mvvm.csproj" />
 	</ItemGroup>
 
 </Project>

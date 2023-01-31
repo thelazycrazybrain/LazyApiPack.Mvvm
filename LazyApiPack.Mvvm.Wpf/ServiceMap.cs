@@ -1,4 +1,4 @@
-﻿namespace Brainstorm.Mvvm
+﻿namespace LazyApiPack.Mvvm.Wpf
 {
     public abstract class ServiceMap
     {
