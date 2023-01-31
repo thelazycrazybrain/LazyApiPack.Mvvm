@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LazyApiPack.Mvvm.Wpf", "LazyApiPack.Mvvm.Wpf\LazyApiPack.Mvvm.Wpf.csproj", "{18498A37-9823-4573-AAF0-2107C9E1CEBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazyApiPack.Mvvm.Wpf.Tests", "LazyApiPack.Mvvm.Wpf.Tests\LazyApiPack.Mvvm.Wpf.Tests.csproj", "{DBE7AD18-255B-4AAC-B940-42EEA914CF08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LazyApiPack.Mvvm.Wpf.Tests", "LazyApiPack.Mvvm.Wpf.Tests\LazyApiPack.Mvvm.Wpf.Tests.csproj", "{DBE7AD18-255B-4AAC-B940-42EEA914CF08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,9 +24,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{DBE7AD18-255B-4AAC-B940-42EEA914CF08} = {D0BB3FC8-9975-4039-BC86-DE89691C8EB5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4BAAA45-79F8-489B-B22D-D4EB85802349}

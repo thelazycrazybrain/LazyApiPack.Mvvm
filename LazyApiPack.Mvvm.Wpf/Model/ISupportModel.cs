@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LazyApiPack.Mvvm.Wpf
+namespace LazyApiPack.Mvvm.Wpf.Model
 {
-    public interface ISupportParameter
+    public interface ISupportModel<TModel>
     {
-        object Parameter { get; set; }
+        TModel? Model { get; set; }
     }
 }

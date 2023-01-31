@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using LazyApiPack.Mvvm.Wpf.Navigation;
 
-namespace LazyApiPack.Mvvm.Wpf
+namespace LazyApiPack.Mvvm.Wpf.Services
 {
     public class AppService : IDisposable
     {
@@ -27,9 +28,9 @@ namespace LazyApiPack.Mvvm.Wpf
         public AppService([NotNull] Type interfaceType, bool isSingleton,
                           [NotNull] Type implementationType)
         {
-            _interfaceType=interfaceType;
+            _interfaceType = interfaceType;
             _isSingleton = isSingleton;
-            _implementationType=implementationType;
+            _implementationType = implementationType;
             _createInstance = CreateServiceInstance;
         }
 

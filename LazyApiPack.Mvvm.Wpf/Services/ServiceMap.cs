@@ -1,4 +1,4 @@
-﻿namespace LazyApiPack.Mvvm.Wpf
+﻿namespace LazyApiPack.Mvvm.Wpf.Services
 {
     public abstract class ServiceMap
     {

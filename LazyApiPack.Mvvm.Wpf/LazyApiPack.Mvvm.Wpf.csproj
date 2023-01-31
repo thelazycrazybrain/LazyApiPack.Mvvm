@@ -20,4 +20,7 @@
 		<PackageReleaseNotes>Supports MVVM functionality for WPF applications.</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="LazyApiPack.Collections" Version="0.0.2" />
+	</ItemGroup>
 </Project>

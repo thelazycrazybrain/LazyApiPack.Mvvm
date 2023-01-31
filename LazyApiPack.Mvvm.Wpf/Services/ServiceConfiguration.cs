@@ -1,14 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
-namespace LazyApiPack.Mvvm.Wpf
+namespace LazyApiPack.Mvvm.Wpf.Services
 {
     public class ServiceConfiguration
     {
         private readonly Dictionary<Type, AppService> _mappings = new Dictionary<Type, AppService>();
 
-       
-        public ReadOnlyDictionary<Type, AppService> GetServices() => 
+
+        public ReadOnlyDictionary<Type, AppService> GetServices() =>
             new ReadOnlyDictionary<Type, AppService>(_mappings);
 
         public void Map(Type interfaceType, Type serviceType, bool asSingleton = false)

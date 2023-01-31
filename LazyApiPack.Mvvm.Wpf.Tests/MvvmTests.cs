@@ -1,10 +1,9 @@
-using Brainstorm.Mvvm;
-using Brainstorm.Mvvm.Wpf;
 using LazyApiPack.Mvvm.Tests.Services;
+using LazyApiPack.Mvvm.Wpf.Navigation;
 
 namespace LazyApiPack.Mvvm.Wpf.Tests
 {
-    public class Tests
+    public class MvvmTests
     {
         [SetUp]
         public void Setup()
@@ -15,7 +14,7 @@ namespace LazyApiPack.Mvvm.Wpf.Tests
         }
 
         [Test]
-        public void Test1()
+        public void TestServiceInjectionWithDependencies()
         {
             var alertService = AppNavigation.Instance.GetService<IAlertService>();
             Assert.NotNull(alertService);
