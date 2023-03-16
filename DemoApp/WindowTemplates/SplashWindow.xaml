@@ -1,0 +1,46 @@
+﻿<Window x:Class="DemoApp.WindowTemplates.SplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DemoApp.WindowTemplates"
+        xmlns:converters="clr-namespace:DemoApp.ValueConverters"
+        mc:Ignorable="d"
+        Height="199" Width="541" WindowStartupLocation="CenterScreen" WindowStyle="None" ShowInTaskbar="False" Topmost="True"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
+    <Grid>
+        <Grid.Resources>
+            <converters:DoubleToIndeterminateConverter x:Key="doubleToIndeterminateConverter" />
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Rectangle Fill="DarkOrange"/>
+        <TextBlock Text="Demo Application" FontWeight="Bold" />
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{Binding ProgressTitle}"/>
+            <TextBlock Grid.Row="1" Text="{Binding ProgressDescription}" Margin="30,10,10,10"/>
+            <ProgressBar Grid.Row="2" Value="{Binding ProgressPercentage}" IsIndeterminate="{Binding ProgressPercentage, Converter={ StaticResource doubleToIndeterminateConverter}}" Margin="10" Height="25"></ProgressBar>
+        </Grid>
+        <WrapPanel Grid.Row="2" HorizontalAlignment="Right" Margin="10">
+            <WrapPanel.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+            </WrapPanel.Resources>
+            <TextBlock Text="{Binding Copyright}"/>
+            <TextBlock Text="{Binding Version}"/>
+        </WrapPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,19 @@
+﻿{
+  "Priority": 0,
+  "LocalizedLanguageName": "Deutsch (Deutschland)",
+  "DefaultLanguageName": "German (Germany)",
+  "LanguageCodeIetf": "de-DE",
+  "LanguageCodeIso639_1": "de",
+  "IsRightToLeft": false,
+  "Translations": {
+    "Messages": {
+      "TestMessage": "Das ist ein Test!"
+    },
+    "Descriptions": {
+      "TestMessage": "Das ist ein Test!"
+    },
+    "Captions": {
+      "TestMessage": "Das ist ein Test!"
+    }
+  }
+}

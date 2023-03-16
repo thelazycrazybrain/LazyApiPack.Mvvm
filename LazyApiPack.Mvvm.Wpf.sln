@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LazyApiPack.Mvvm.Wpf", "Laz
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LazyApiPack.Mvvm.Wpf.Tests", "LazyApiPack.Mvvm.Wpf.Tests\LazyApiPack.Mvvm.Wpf.Tests.csproj", "{DBE7AD18-255B-4AAC-B940-42EEA914CF08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoApp", "DemoApp\DemoApp.csproj", "{599E57CA-3676-4DF9-8D83-C9604A4215ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DBE7AD18-255B-4AAC-B940-42EEA914CF08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBE7AD18-255B-4AAC-B940-42EEA914CF08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBE7AD18-255B-4AAC-B940-42EEA914CF08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{599E57CA-3676-4DF9-8D83-C9604A4215ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{599E57CA-3676-4DF9-8D83-C9604A4215ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{599E57CA-3676-4DF9-8D83-C9604A4215ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{599E57CA-3676-4DF9-8D83-C9604A4215ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

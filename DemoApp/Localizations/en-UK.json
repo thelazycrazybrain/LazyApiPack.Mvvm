@@ -1,0 +1,19 @@
+﻿{
+  "Priority": 0,
+  "LocalizedLanguageName": "English (United States)",
+  "DefaultLanguageName": "English (United States)",
+  "LanguageCodeIetf": "en-US",
+  "LanguageCodeIso639_1": "en",
+  "IsRightToLeft": false,
+  "Translations": {
+    "Messages": {
+      "TestMessage": "This is a test!"
+    },
+    "Descriptions": {
+      "TestMessage": "This is a test!"
+    },
+    "Captions": {
+      "TestMessage": "This is a test!"
+    }
+  }
+}

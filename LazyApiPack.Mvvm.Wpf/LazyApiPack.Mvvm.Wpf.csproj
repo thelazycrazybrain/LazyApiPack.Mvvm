@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0-windows</TargetFramework>
 	
@@ -21,6 +21,18 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="LazyApiPack.Collections" Version="0.0.2" />
+	  <None Remove="Localizations\Localization.de-DE.json" />
+	  <None Remove="Localizations\Localization.en-UK.json" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Localizations\Localization.de-DE.json" WithCulture="false" />
+		<EmbeddedResource Include="Localizations\Localization.en-UK.json" WithCulture="false" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="LazyApiPack.Collections" Version="0.0.4" />
+	  <PackageReference Include="LazyApiPack.Localization" Version="0.0.6" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="ReadMe.md" Pack="True" PackagePath="\" />
 	</ItemGroup>
 </Project>

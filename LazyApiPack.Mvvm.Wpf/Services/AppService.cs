@@ -59,7 +59,7 @@ namespace LazyApiPack.Mvvm.Wpf.Services
                     $"Can not create a default instance of the service because the implementation type is unknown.");
             }
 
-            return AppNavigation.Instance.CreateObjectWithDependencyInjection(_implementationType);
+            return MvvmApp.Navigation.CreateObjectWithDependencyInjection(_implementationType);
 
         }
 
