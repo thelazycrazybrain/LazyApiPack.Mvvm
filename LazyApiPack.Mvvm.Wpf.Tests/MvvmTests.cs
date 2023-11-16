@@ -1,5 +1,5 @@
 using LazyApiPack.Mvvm.Tests.Services;
-using LazyApiPack.Mvvm.Wpf.Navigation;
+using LazyApiPack.Mvvm.Wpf.Application;
 using LazyApiPack.Mvvm.Wpf.Regions;
 using LazyApiPack.Mvvm.Wpf.Tests.Models;
 using LazyApiPack.Mvvm.Wpf.Tests.ViewModels.Main;

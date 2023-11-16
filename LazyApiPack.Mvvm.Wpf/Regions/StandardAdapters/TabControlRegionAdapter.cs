@@ -1,5 +1,5 @@
 ﻿using LazyApiPack.Mvvm.Wpf.Localization;
-using LazyApiPack.Mvvm.Wpf.Navigation;
+using LazyApiPack.Mvvm.Wpf.Application;
 using LazyApiPack.Mvvm.Wpf.Regions;
 using System;
 using System.Collections.Generic;

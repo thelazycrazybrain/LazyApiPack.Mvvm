@@ -1,5 +1,8 @@
-﻿using System;
+﻿using LazyApiPack.Mvvm.Wpf.Application;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -10,7 +13,22 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
 {
     public class RegionManager : DependencyObject
     {
-        private static Dictionary<string, UIElement> _regions = new Dictionary<string, UIElement>();
+        private static Dictionary<string, RegionAdapterInstance> _activeRegions = new Dictionary<string, RegionAdapterInstance>();
+        private static Dictionary<Type, Type> _regionAdapters;
+        internal static void Initialize(ref Dictionary<Type, Type> regionAdapters)
+        {
+            _regionAdapters = regionAdapters;
+        }
+
+        public static void NavigateTo(UIElement view, string regionName, bool isModal)
+        {
+            if (_activeRegions.ContainsKey(regionName))
+            {
+                _activeRegions[regionName].Instance.AddView(view);
+            }
+            throw new RegionNotFoundException(regionName);
+        }
+
         public static readonly DependencyProperty RegionNameProperty =
             DependencyProperty.RegisterAttached(
           "RegionName",
@@ -21,18 +39,26 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
 
         private static void OnRegionNameChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
+            if (DesignerProperties.GetIsInDesignMode(sender)) return;
             var target = (UIElement)sender;
-
-            var oldValue = (string)e.OldValue;
-            if (!string.IsNullOrWhiteSpace(oldValue) && _regions.ContainsKey(oldValue))
+            var senderType = sender.GetType();
+            if (!_regionAdapters.ContainsKey(senderType))
             {
-                _regions.Remove(oldValue);
+                throw new RegionAdapterNotFoundException($"Region adapter for region type {senderType} was not found.");
+            }
+            var adapterType = _regionAdapters[senderType];
+
+            var adapter = new RegionAdapterInstance(target, adapterType);
+            var oldValue = (string)e.OldValue;
+            if (!string.IsNullOrWhiteSpace(oldValue) && _activeRegions.ContainsKey(oldValue))
+            {
+                _activeRegions.Remove(oldValue);
             }
 
             var newValue = (string)e.NewValue;
             if (!string.IsNullOrWhiteSpace(newValue))
             {
-                _regions.Add(newValue, target);
+                _activeRegions.Add(newValue, adapter);
             }
 
         }
@@ -43,15 +69,6 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
 
         public static void SetRegionName(UIElement target, string regionName) =>
             target.SetValue(RegionNameProperty, regionName);
-
-        public static bool RegionAvailable(string regionName)
-        {
-            return _regions.ContainsKey(regionName);
-        }
-        public static UIElement GetNavigationControl(string regionName)
-        {
-            return _regions[regionName];
-        }
-       
     }
+
 }

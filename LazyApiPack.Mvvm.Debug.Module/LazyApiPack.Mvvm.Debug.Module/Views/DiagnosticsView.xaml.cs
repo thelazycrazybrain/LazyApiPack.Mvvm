@@ -1,5 +1,4 @@
-﻿using LazyApiPack.Mvvm.Wpf.Application;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,13 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LazyApiPack.Mvvm.Wpf.Tests.WindowTemplates
+namespace LazyApiPack.Mvvm.Debug.Module.Views
 {
-    public partial class ApplicationShell : Window, IWindowTemplate
+    /// <summary>
+    /// Interaction logic for DiagnosticsView.xaml
+    /// </summary>
+    public partial class DiagnosticsView : UserControl
     {
-        public ApplicationShell()
+        public DiagnosticsView()
         {
             InitializeComponent();
         }

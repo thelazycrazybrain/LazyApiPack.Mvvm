@@ -1,4 +1,4 @@
-﻿using LazyApiPack.Mvvm.Wpf.Navigation;
+﻿using LazyApiPack.Mvvm.Wpf.Application;
 using LazyApiPack.Mvvm.Wpf.Regions;
 using System;
 using System.Collections.Generic;
@@ -31,5 +31,6 @@ namespace LazyApiPack.Mvvm.Wpf.Tests.WindowTemplates
         public string? ProgressDescription { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         /// <inheritdoc />
         public double? ProgressPercentage { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool HasProgress { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

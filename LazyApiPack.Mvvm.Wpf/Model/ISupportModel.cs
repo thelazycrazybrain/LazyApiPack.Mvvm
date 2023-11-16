@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace LazyApiPack.Mvvm.Wpf.Model
 {
-    public interface ISupportModel<TModel>
+    public interface ISupportModel
     {
-        TModel? Model { get; set; }
+        object? Model { get; set; }
+    }
+    public interface ISupportModel<TModel> : ISupportModel
+    {
+        new TModel? Model { get; set; }
     }
 }

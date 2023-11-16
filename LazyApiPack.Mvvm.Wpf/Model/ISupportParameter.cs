@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace LazyApiPack.Mvvm.Wpf.Model
 {
-    public interface ISupportParameter<TParameter>
+    public interface ISupportParameter
+    {
+        object? Parameter { get; set; }
+    }
+    public interface ISupportParameter<TParameter> : ISupportModel
     {
         TParameter? Parameter { get; set; }
     }

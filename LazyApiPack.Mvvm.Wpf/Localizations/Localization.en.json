@@ -1,0 +1,20 @@
+﻿{
+  "Priority": 2147483647,
+  "ModuleId": "LazyApiPack.Mvvm.Wpf",
+  "LanguageCode": "en",
+  "IsDefault": true,
+  "LocalizedLanguageName": "English",
+  "DefaultLanguageName": "English",
+  "IsRightToLeft": false,
+  "Translations": {
+    "Messages": {
+    },
+    "Descriptions": {
+      "InitializeLocalization": "Loading localizations",
+      "InitializeUi": "Loading UI"
+    },
+    "Captions": {
+      "LoadingModules": "Loading modules..."
+    }
+  }
+}

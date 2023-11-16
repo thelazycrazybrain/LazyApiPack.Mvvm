@@ -23,24 +23,7 @@ namespace LazyApiPack.Mvvm.Wpf.Regions {
 
     }
 
-    public class RegionAdapterConfiguration {
-        private readonly Dictionary<Type, Type> _uiToAdapterMap = new Dictionary<Type, Type>();
-
-        public Dictionary<Type, Type> GetRegionAdapters() {
-            return new Dictionary<Type, Type>(_uiToAdapterMap);
-
-        }
-
-        public void Map(Type controlType, Type regionAdapterType) {
-            _uiToAdapterMap.Upsert(controlType, regionAdapterType);
-        }
-
-        public void Map<TControl, TRegionAdapter>() where TRegionAdapter : RegionAdapter<TControl>
-                                                    where TControl : UIElement {
-            Map(typeof(TControl), typeof(TRegionAdapter));
-        }
-
-    }
+   
 
 
 }

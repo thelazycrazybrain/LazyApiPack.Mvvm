@@ -1,4 +1,4 @@
-﻿using LazyApiPack.Mvvm.Wpf.BaseImpl;
+﻿using LazyApiPack.Utils.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +7,36 @@ using System.Threading.Tasks;
 
 namespace LazyApiPack.Mvvm.Wpf.Model.BaseImpl
 {
-    public class ViewModelBase<TModel, TParameter> : NotifyObject, ISupportModel<TModel>, ISupportParameter<TParameter>
+    public class ViewModelBase : NotifyObject
     {
-        private TParameter? _parameter;
-        public TParameter? Parameter
+        protected object? _parameter;
+        protected object? _model;
+
+        public object? Parameter
         {
             get => _parameter;
+            set
+            {
+                SetPropertyValue(ref _parameter, value);
+            }
+        }
+
+        public object? Model
+        {
+            get => _model;
+            set
+            {
+                SetPropertyValue(ref _model, value);
+            }
+        }
+
+
+    }
+    public class ViewModelBase<TModel, TParameter> : ViewModelBase, ISupportModel<TModel>, ISupportParameter<TParameter>
+    {
+        public new TParameter? Parameter
+        {
+            get => (TParameter?)_parameter;
             set
             {
                 SetPropertyValue(ref _parameter, value);
@@ -20,10 +44,10 @@ namespace LazyApiPack.Mvvm.Wpf.Model.BaseImpl
             }
         }
 
-        private TModel? _model;
-        public TModel? Model
+       
+        public new TModel? Model
         {
-            get => _model;
+            get => (TModel?)_model;
             set
             {
                 SetPropertyValue(ref _model, value);

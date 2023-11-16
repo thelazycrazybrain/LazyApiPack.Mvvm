@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using LazyApiPack.Mvvm.Wpf.Navigation;
+using LazyApiPack.Mvvm.Wpf.Application;
 
 namespace LazyApiPack.Mvvm.Wpf.Services
 {
@@ -25,8 +25,8 @@ namespace LazyApiPack.Mvvm.Wpf.Services
 
         private readonly Type? _implementationType;
 
-        public AppService([NotNull] Type interfaceType, bool isSingleton,
-                          [NotNull] Type implementationType)
+        public AppService([DisallowNull] Type interfaceType, bool isSingleton,
+                          [DisallowNull] Type implementationType)
         {
             _interfaceType = interfaceType;
             _isSingleton = isSingleton;
@@ -34,8 +34,8 @@ namespace LazyApiPack.Mvvm.Wpf.Services
             _createInstance = CreateServiceInstance;
         }
 
-        public AppService([NotNull] Type interfaceType, bool isSingleton,
-                          [NotNull] Func<object> createInstance)
+        public AppService([DisallowNull] Type interfaceType, bool isSingleton,
+                          [DisallowNull] Func<object> createInstance)
         {
             _interfaceType = interfaceType;
             _isSingleton = isSingleton;
@@ -43,7 +43,7 @@ namespace LazyApiPack.Mvvm.Wpf.Services
 
         }
 
-        public AppService([NotNull] Type interfaceType, [NotNull] object singletonInstance)
+        public AppService([DisallowNull] Type interfaceType, [DisallowNull] object singletonInstance)
         {
             _interfaceType = interfaceType;
             _isSingleton = true;
@@ -59,7 +59,7 @@ namespace LazyApiPack.Mvvm.Wpf.Services
                     $"Can not create a default instance of the service because the implementation type is unknown.");
             }
 
-            return MvvmApp.Navigation.CreateObjectWithDependencyInjection(_implementationType);
+            return MvvmApplication.Navigation.CreateObjectWithDependencyInjection(_implementationType);
 
         }
 
