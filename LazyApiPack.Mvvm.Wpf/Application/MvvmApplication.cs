@@ -40,13 +40,15 @@ namespace LazyApiPack.Mvvm.Wpf.Application
         //private event MvvmApplicationMessageDelegate OnApplicationMessageReceived;
         private IWindowTemplate? _shellWindow;
         private ISplashScreenWindowTemplate? _splashScreenWindow;
+        private List<IRegionAdapter> _regionAdapters = new();
+
         private Dictionary<Type, AppService> _appServices = new();
         private Dictionary<Type, Store> _stores = new();
         private List<MvvmModule> _modules = new();
         private Dictionary<Type, ViewTypeInfo> _views = new();
         private Dictionary<Type, ViewModelTypeInfo> _viewModels = new();
         private Dictionary<Type, IWindowTemplate> _openWindows = new();
-        private Dictionary<Type, Type> _regionAdapters = new();
+
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -103,20 +105,27 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                 _appServices.Add(service.Key, service.Value);
             }
 
-            _views = GetTypeDictionary(module.Configuration.ViewNamespaces, (type, relativeNs) => new ViewTypeInfo(relativeNs));
+            foreach(var view in GetTypeDictionary(module.Configuration.ViewNamespaces, (type, relativeNs) => new ViewTypeInfo(relativeNs)))
+            {
+                _views.Add(view.Key, view.Value);
+            }
 
-            _viewModels = GetTypeDictionary(module.Configuration.ViewModelNamespaces, (type, relativeNs) =>
+            foreach (var viewModel in GetTypeDictionary(module.Configuration.ViewModelNamespaces, (type, relativeNs) =>
             {
                 var interfaces = type.GetInterfaces();
                 return new ViewModelTypeInfo(
                                         relativeNs,
                                         interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISupportParameter<>)),
                                         interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISupportModel<>)));
-            });
+            }))
+            {
+                _viewModels.Add(viewModel.Key, viewModel.Value);
+
+            }
 
             foreach (var adapter in module.Configuration.RegionAdapters)
             {
-                _regionAdapters.Add(adapter.Key, adapter.Value);
+                _regionAdapters.Add((IRegionAdapter)Activator.CreateInstance(adapter));
             }
 
             //_regions.Add(module, module.Configuration.Regions); // Obsolete
@@ -173,12 +182,12 @@ namespace LazyApiPack.Mvvm.Wpf.Application
         #endregion
 
         #region Navigation
-        public TViewModel NavigateTo<TViewModel>(string region, object? parameter = null, object? model = null)
+        public TViewModel NavigateTo<TViewModel>(string region, object? parameter = null, object? model = null, bool isModal = false)
         {
-            return (TViewModel)NavigateTo(typeof(TViewModel), region, parameter, model);
+            return (TViewModel)NavigateTo(typeof(TViewModel), region, parameter, model, isModal);
         }
 
-        public object NavigateTo(string viewModelName, string region, object? parameter = null, object? model = null)
+        public object NavigateTo(string viewModelName, string region, object? parameter = null, object? model = null, bool isModal = false)
         {
             if (!_viewModels.Any(m => string.Compare(m.Value.RelativeNamespace, viewModelName) == 0))
             {
@@ -190,24 +199,24 @@ namespace LazyApiPack.Mvvm.Wpf.Application
 
             var viewItem = _views.First(v => v.Value.RelativeNamespace == viewModelName.Substring(0, viewModelName.Length - "Model".Length));
             var view = CreateObjectWithDependencyInjection(viewItem.Key);
-            return NavigateTo(viewModel, view, region, model, parameter);
+            return NavigateTo(viewModel, view, region, model, parameter, isModal);
 
         }
 
-        public object NavigateTo(Type viewModelType, string region, object? parameter = null, object? model = null)
+        public object NavigateTo(Type viewModelType, string region, object? parameter = null, object? model = null, bool isModal = false)
         {
             var view = GetAssociatedView(viewModelType) ?? throw new ViewNotFoundException($"The view for the model {viewModelType.FullName} was not found.");
-            return NavigateTo(viewModelType, view, region, model, parameter);
+            return NavigateTo(viewModelType, view, region, model, parameter, isModal);
 
         }
-        public object NavigateTo(Type viewModelType, Type viewType, string region, object? model = null, object? parameter = null)
+        public object NavigateTo(Type viewModelType, Type viewType, string region, object? model = null, object? parameter = null, bool isModal = false)
         {
             var viewModel = CreateObjectWithDependencyInjection(viewModelType);
             var view = CreateObjectWithDependencyInjection(viewType);
-            return NavigateTo(viewModel, view, region, model, parameter);
+            return NavigateTo(viewModel, view, region, model, parameter, isModal);
         }
 
-        private object NavigateTo(object viewModel, object view, string region, object? model, object? parameter)
+        private object NavigateTo(object viewModel, object view, string region, object? model, object? parameter, bool isModal)
         {
             if (viewModel is ISupportModel m) {
                 m.Model = model;
@@ -217,11 +226,12 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                 p.Parameter = parameter;
             }
 
-            throw new NotImplementedException();
-
-            //var regionElement = RegionManager.Regions[region];
-            
-            //TODO: navigation
+            if (view is FrameworkElement fe)
+            {
+                fe.DataContext = viewModel;
+            }
+            RegionManager.NavigateTo(view, region, isModal);
+            return viewModel;
         }
 
         public void ShowSplashScreen(string progressTitle, string progressDescription, double? progressPercentage = null)
@@ -360,7 +370,7 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                     .Select(t => new KeyValuePair<Type, TKey>(t, getKey(t, GetRelativeNamespace(t, n))))))
                 );
         }
-        private string GetRelativeNamespace(Type type, string fullNamespace) => type.Namespace?.Substring(fullNamespace.Length).Trim('.') ?? "";
+        private string GetRelativeNamespace(Type type, string fullNamespace) => type.Name;
 
         #endregion
 

@@ -15,6 +15,6 @@ namespace LazyApiPack.Mvvm.Wpf.Application
         public List<Type> Modules { get; internal set; } = new();
         public Dictionary<Type, AppService> ServiceMappings { get; internal set; } = new();
         public List<Store> Stores { get; internal set; } = new();
-        public Dictionary<Type, Type> RegionAdapters { get; internal set; } = new();
+        public List<Type> RegionAdapters { get; internal set; } = new();
     }
 }

@@ -128,10 +128,9 @@ namespace LazyApiPack.Mvvm.Wpf.Application
         }
 
         public static MvvmModuleConfiguration WithRegionAdapter
-            <TUserControl, TAdapter>(this MvvmModuleConfiguration config) where TAdapter : IRegionAdapter
-                                                                          where TUserControl : UIElement
+            <TAdapter>(this MvvmModuleConfiguration config) where TAdapter : IRegionAdapter
         {
-            config.RegionAdapters.Add(typeof(TUserControl), typeof(TAdapter));
+            config.RegionAdapters.Add( typeof(TAdapter));
             return config;
         }
 

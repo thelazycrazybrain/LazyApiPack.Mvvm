@@ -11,21 +11,19 @@ using System.Windows.Controls;
 
 namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters {
     public class TabControlRegionAdapter : RegionAdapter<TabControl>
-    {
-        public TabControlRegionAdapter(TabControl presenterControl) : base(presenterControl) { }
-
-        public override void AddView(object view)
+    { 
+        public override void AddView(object view, bool isModal, Type dialogType, UIElement presenter)
         {
             var title = CaptionHelper.GetMvvmCaption(view);
-            PresenterControl.Items.Add(new TabItem() { Content = view, Header = title });
+            ((TabControl)presenter).Items.Add(new TabItem() { Content = view, Header = title });
         }
 
-        public override void RemoveView(object view)
+        public override void RemoveView(object view, UIElement presenter)
         {
-            var tab = PresenterControl.Items.OfType<TabItem>().FirstOrDefault(i => i.Content == view);
+            var tab = ((TabControl)presenter).Items.OfType<TabItem>().FirstOrDefault(i => i.Content == view);
             if (tab != null)
             {
-                PresenterControl.Items.Remove(tab);
+                ((TabControl)presenter).Items.Remove(tab);
             }
         }
     }

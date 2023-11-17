@@ -1,21 +1,38 @@
-﻿using System.Windows;
+﻿using LazyApiPack.Mvvm.Wpf.Application;
+using System.Windows;
 
 namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters
 {
     public class MultiWindowRegionAdapter : RegionAdapter<Window>
     {
-        public MultiWindowRegionAdapter(Window presenterControl) : base(presenterControl)
+        Dictionary<object, IWindowTemplate> _activeWindows = new();
+        public override void AddView(object view, bool isModal, Type dialogType, UIElement presenter)
         {
+            var wdw = (IWindowTemplate)Activator.CreateInstance(dialogType);
+            wdw.Content = view;
+            wdw.Closed += Wdw_Closed;
+            _activeWindows.Add(view, wdw);
+            if (isModal)
+            {
+                wdw.ShowDialog();
+            }
+            else
+            {
+                wdw.Show();
+            }
         }
 
-        public override void AddView(object view)
+        private void Wdw_Closed(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            var view = _activeWindows.First(w => w.Value == sender);
+            _activeWindows.Remove(view);
         }
 
-        public override void RemoveView(object view)
+        public override void RemoveView(object view, UIElement presenter)
         {
-            throw new NotImplementedException();
+            var wdw = _activeWindows[view];
+            wdw.Close();
+            _activeWindows.Remove(view);
         }
     }
 

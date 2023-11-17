@@ -11,55 +11,80 @@ using System.Windows;
 
 namespace LazyApiPack.Mvvm.Wpf.Regions
 {
+
     public class RegionManager : DependencyObject
     {
-        private static Dictionary<string, RegionAdapterInstance> _activeRegions = new Dictionary<string, RegionAdapterInstance>();
-        private static Dictionary<Type, Type> _regionAdapters;
-        internal static void Initialize(ref Dictionary<Type, Type> regionAdapters)
+        private record RegionMapping(IRegionAdapter RegionAdapter, UIElement UIElement, Type DialogPresenter);
+        private static Dictionary<string, RegionMapping> _activeRegions = new();
+        private static List<IRegionAdapter> _regionAdapters;
+        internal static void Initialize(ref List<IRegionAdapter> regionAdapters)
         {
             _regionAdapters = regionAdapters;
         }
 
-        public static void NavigateTo(UIElement view, string regionName, bool isModal)
+        public static void NavigateTo(object view, string regionName, bool isModal)
         {
             if (_activeRegions.ContainsKey(regionName))
             {
-                _activeRegions[regionName].Instance.AddView(view);
+                _activeRegions[regionName].RegionAdapter.AddView(view, isModal, GetDialogWindowType(regionName), _activeRegions[regionName].UIElement);
             }
-            throw new RegionNotFoundException(regionName);
+            _activeRegions[regionName].RegionAdapter.AddView(view, isModal, GetDialogWindowType(regionName), _activeRegions[regionName].UIElement);
         }
 
         public static readonly DependencyProperty RegionNameProperty =
             DependencyProperty.RegisterAttached(
-          "RegionName",
-          typeof(string),
-          typeof(RegionManager),
-          new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender, OnRegionNameChanged)
-        );
+            "RegionName",
+            typeof(string),
+            typeof(RegionManager),
+            new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender, OnRegionNameChanged));
+
+        public static readonly DependencyProperty DialogWindowTypeProperty =
+            DependencyProperty.RegisterAttached(
+            "DialogWindowType",
+            typeof(Type),
+            typeof(RegionManager),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnDialogWindowTypeChanged));
+
+        private static void OnDialogWindowTypeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DesignerProperties.GetIsInDesignMode(sender)) return;
+            var target = (UIElement)sender;
+            UpdateNameAndDialogType(target);
+
+        }
 
         private static void OnRegionNameChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (DesignerProperties.GetIsInDesignMode(sender)) return;
-            var target = (UIElement)sender;
-            var senderType = sender.GetType();
-            if (!_regionAdapters.ContainsKey(senderType))
+            UpdateNameAndDialogType((UIElement)sender);
+
+        }
+
+        private static void UpdateNameAndDialogType(UIElement target)
+        {
+            var senderType = target.GetType();
+            var region = GetRegionName(target);
+            if (string.IsNullOrEmpty(region)) return;
+            var adapter = _regionAdapters.FirstOrDefault(r => r.PresenterControlType == senderType);
+            if (adapter == null)
+            {
+                adapter = _regionAdapters.FirstOrDefault(r => r.PresenterControlType.IsAssignableFrom(senderType));
+            }
+            if (adapter == null)
             {
                 throw new RegionAdapterNotFoundException($"Region adapter for region type {senderType} was not found.");
             }
-            var adapterType = _regionAdapters[senderType];
 
-            var adapter = new RegionAdapterInstance(target, adapterType);
-            var oldValue = (string)e.OldValue;
-            if (!string.IsNullOrWhiteSpace(oldValue) && _activeRegions.ContainsKey(oldValue))
+            if (!_activeRegions.ContainsKey(region))
             {
-                _activeRegions.Remove(oldValue);
+                _activeRegions.Add(region, new RegionMapping(adapter, target, GetDialogWindowType(target)));
+            } else
+            {
+                //var kvp = _activeRegions[region];
+                _activeRegions.Remove(region);
+                _activeRegions.Add(region, new RegionMapping(adapter, target, GetDialogWindowType(target)));
             }
 
-            var newValue = (string)e.NewValue;
-            if (!string.IsNullOrWhiteSpace(newValue))
-            {
-                _activeRegions.Add(newValue, adapter);
-            }
 
         }
 
@@ -69,6 +94,14 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
 
         public static void SetRegionName(UIElement target, string regionName) =>
             target.SetValue(RegionNameProperty, regionName);
+
+        public static Type GetDialogWindowType(UIElement target) =>
+            (Type)target.GetValue(DialogWindowTypeProperty);
+
+        public static void SetDialogWindowType(UIElement target, Type dialogWindowType) =>
+            target.SetValue(DialogWindowTypeProperty, dialogWindowType);
+
+        public static Type GetDialogWindowType(string region) => _activeRegions[region].DialogPresenter;
     }
 
 }

@@ -1,17 +1,20 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
-namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters {
-    public class ContentControlRegionAdapter : RegionAdapter<ContentControl> {
-        public ContentControlRegionAdapter(ContentControl presenterControl) : base(presenterControl) {
+namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters
+{
+    public class ContentControlRegionAdapter : RegionAdapter<ContentControl>
+    {
+        public override void AddView(object view, bool isModal, Type dialogType, UIElement presenter)
+        {
+            ((ContentControl)presenter).Content = view;
         }
 
-        public override void AddView(object view) {
-            PresenterControl.Content=view;
-        }
-
-        public override void RemoveView(object view) {
-            if (view == null || PresenterControl.Content == view) {
-                PresenterControl.Content=null;
+        public override void RemoveView(object view, UIElement presenter)
+        {
+            if (view == null || ((ContentControl)presenter).Content == view)
+            {
+                ((ContentControl)presenter).Content = null;
             }
         }
 
