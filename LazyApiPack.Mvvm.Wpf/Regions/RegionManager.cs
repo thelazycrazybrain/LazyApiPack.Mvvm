@@ -28,7 +28,6 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
             {
                 _activeRegions[regionName].RegionAdapter.AddView(view, isModal, GetDialogWindowType(regionName), _activeRegions[regionName].UIElement);
             }
-            _activeRegions[regionName].RegionAdapter.AddView(view, isModal, GetDialogWindowType(regionName), _activeRegions[regionName].UIElement);
         }
 
         public static readonly DependencyProperty RegionNameProperty =
