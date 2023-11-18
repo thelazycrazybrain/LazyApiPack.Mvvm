@@ -24,12 +24,13 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             // IMPORTANT: If module uses submodules, pass the submodule to MvvmApllication back
         }
 
-        public abstract void OnModuleLoaded();
-        public abstract void OnActivated();
-        public abstract void OnDeactivated();
-        public abstract void OnModuleUnloaded();
+        public virtual void OnModuleLoaded() { }
+        public virtual void OnActivated() { }
+        public virtual void OnDeactivated() { }
+        public virtual void OnModuleUnloaded() { }
         public abstract void OnSetup(MvvmModuleConfiguration configuration);
-        public abstract void OnLocalizationInitialized(ILocalizationService service);
-        public abstract void OnMessageReceived(MvvmModule sender, string? moduleId, string messageId, object message);
+        public virtual void OnSetupComplete() { }
+        public virtual void OnLocalizationInitialized(ILocalizationService service) { }
+        public virtual void OnMessageReceived(MvvmModule sender, string? moduleId, string messageId, object message) { }
     }
 }

@@ -21,6 +21,8 @@ namespace LazyApiPack.Mvvm.Wpf.Application
     public abstract class MvvmApplication : System.Windows.Application, IDisposable
     {
         public static MvvmApplication Navigation { get => (MvvmApplication)Current; }
+        protected record ViewModelTypeInfo(string RelativeName, string FullName, bool SupportsParameter, bool SupportsModel);
+        protected record ViewTypeInfo(string RelativeName, string FullName);
         //private class MvvmApplicationMessageEventArgs : EventArgs
         //{
         //    public MvvmApplicationMessageEventArgs(MvvmModule sender, string moduleId, string messageId, object message)
@@ -92,7 +94,13 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                ?? throw new InvalidCastException($"Can not convert ShellWindow of type {config.ShellWindow.FullName} to {typeof(IWindowTemplate).FullName}.");
 
             HideSplashScreen();
-            OnStartupComplete();
+            OnSetupComplete();
+            foreach (var module in loadedModules.Values)
+            {
+                module.OnSetupComplete();
+            }
+
+            OnSetupComplete();
             MvvmApplication.Current.MainWindow = (Window)_shellWindow;
             _shellWindow.Show();
 
@@ -105,7 +113,7 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                 _appServices.Add(service.Key, service.Value);
             }
 
-            foreach(var view in GetTypeDictionary(module.Configuration.ViewNamespaces, (type, relativeNs) => new ViewTypeInfo(relativeNs)))
+            foreach(var view in GetTypeDictionary(module.Configuration.ViewNamespaces, (type, relativeNs) => new ViewTypeInfo(relativeNs, type.FullName ?? type.Name)))
             {
                 _views.Add(view.Key, view.Value);
             }
@@ -115,6 +123,7 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                 var interfaces = type.GetInterfaces();
                 return new ViewModelTypeInfo(
                                         relativeNs,
+                                        type.FullName ?? type.Name,
                                         interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISupportParameter<>)),
                                         interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISupportModel<>)));
             }))
@@ -127,20 +136,6 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             {
                 _regionAdapters.Add((IRegionAdapter)Activator.CreateInstance(adapter));
             }
-
-            //_regions.Add(module, module.Configuration.Regions); // Obsolete
-
-            //ConfigureRegionsInternal(adapterConfiguration);
-            //ConfigureRegions(adapterConfiguration);
-            //_controlToRegionAdapterMap = adapterConfiguration.GetRegionAdapters();
-            // TODO: Register IWindowTemplates (Tabbed, Single Page, Multiple, Dialogues)
-
-
-
-
-
-
-
 
             module.OnModuleLoaded();
             module.OnActivated();
@@ -174,12 +169,13 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                 GetModulesRecursive(inst.Configuration.Modules, inst, ref loadedModules);
             }
         }
-        #region Abstract Handlers
-        protected abstract void OnStartupComplete();
+       
+        
         protected abstract void OnSetup(MvvmApplicationConfiguration configuration);
-        protected abstract void OnLocalizationInitialized(ILocalizationService service);
-        protected abstract void OnMessageReceived(MvvmModule? sender, string? moduleId, string? messageId, object? message);
-        #endregion
+        protected virtual void OnSetupComplete() { }
+        protected virtual void OnLocalizationInitialized(ILocalizationService service) { }
+        protected virtual void OnMessageReceived(MvvmModule? sender, string? moduleId, string? messageId, object? message) { }
+
 
         #region Navigation
         public TViewModel NavigateTo<TViewModel>(string region, object? parameter = null, object? model = null, bool isModal = false)
@@ -189,20 +185,43 @@ namespace LazyApiPack.Mvvm.Wpf.Application
 
         public object NavigateTo(string viewModelName, string region, object? parameter = null, object? model = null, bool isModal = false)
         {
-            if (!_viewModels.Any(m => string.Compare(m.Value.RelativeNamespace, viewModelName) == 0))
+            if (!_viewModels.Any(m => string.Compare(m.Value.RelativeName, viewModelName) == 0))
             {
                 throw new ViewModelNotFoundException(viewModelName);
             }
-            var viewModelItem = _viewModels.First(m => string.Compare(m.Value.RelativeNamespace, viewModelName) == 0);
+            var viewModelItems = _viewModels.Where(m => string.Compare(m.Value.RelativeName, viewModelName) == 0);
+            if (viewModelItems.Count() > 1)
+            {
+                // If duplicate model names, use full namespace
+                viewModelItems = _viewModels.Where(m => string.Compare(m.Value.FullName, viewModelName) == 0);
+            }
+            var viewModel = CreateObjectWithDependencyInjection(viewModelItems.First().Key);
 
-            var viewModel = CreateObjectWithDependencyInjection(viewModelItem.Key);
-
-            var viewItem = _views.First(v => v.Value.RelativeNamespace == viewModelName.Substring(0, viewModelName.Length - "Model".Length));
-            var view = CreateObjectWithDependencyInjection(viewItem.Key);
+            var viewItems = _views.Where(v => v.Value.RelativeName == viewModelName.Substring(0, viewModelName.Length - "Model".Length));
+            if (viewItems.Count() > 1)
+            {
+                // If duplicate model names, use full namespace
+                // TODO: Don't just replace ViewModels with Views, because ViewModels could also be the name of the module
+                viewItems = _views.Where(v => v.Value.FullName == GetViewNamespace(viewModelName));
+            }
+            
+            var view = CreateObjectWithDependencyInjection(viewItems.First().Key);
             return NavigateTo(viewModel, view, region, model, parameter, isModal);
 
         }
 
+        private string GetViewNamespace(string viewModelNamespace)
+        {
+            var viewModelName = viewModelNamespace.Substring(viewModelNamespace.LastIndexOf(".") + 1);
+            var @namespace = viewModelNamespace.Substring(0, viewModelNamespace.LastIndexOf("."));
+
+            var viewName = viewModelName.Substring(0, viewModelName.Length - "Model".Length);
+            var viewNamespace = viewModelNamespace.Substring(0, viewModelNamespace.LastIndexOf("ViewModels")) + "Views";
+
+            return viewNamespace + "." + viewName;
+
+
+        }
         public object NavigateTo(Type viewModelType, string region, object? parameter = null, object? model = null, bool isModal = false)
         {
             var view = GetAssociatedView(viewModelType) ?? throw new ViewNotFoundException($"The view for the model {viewModelType.FullName} was not found.");
@@ -379,30 +398,7 @@ namespace LazyApiPack.Mvvm.Wpf.Application
         /// </summary>
         public BoolList IsBusy = new BoolList();
 
-        #region Helper classes
-        protected class ViewModelTypeInfo
-        {
-            public readonly string RelativeNamespace;
-            public readonly bool SupportsParameter;
-            public readonly bool SupportsModel;
 
-            public ViewModelTypeInfo(string relativeNamespace, bool supportsParameter, bool supportsModel)
-            {
-                RelativeNamespace = relativeNamespace;
-                SupportsParameter = supportsParameter;
-                SupportsModel = supportsModel;
-            }
-        }
-
-        protected class ViewTypeInfo
-        {
-            public readonly string RelativeNamespace;
-            public ViewTypeInfo(string relativeNamespace)
-            {
-                RelativeNamespace = relativeNamespace;
-            }
-        }
-        #endregion
 
         #region IDisposable
         public void Dispose()
@@ -425,39 +421,6 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             //}
         }
         #endregion
-    }
-
-
-    [Serializable]
-    public class ViewNotFoundException : Exception
-    {
-        public ViewNotFoundException(string viewName) : base($"View {viewName} not found.")
-        {
-
-        }
-        public ViewNotFoundException(string viewName, string message) : base($"View {viewName} not found.", new Exception(message))
-        {
-        }
-        public ViewNotFoundException(string viewName, string message, Exception inner) : base($"View {viewName} not found.", new Exception(message, inner)) { }
-        protected ViewNotFoundException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-    }
-
-    [Serializable]
-    public class ViewModelNotFoundException : Exception
-    {
-        public ViewModelNotFoundException(string viewName) : base($"ViewModel {viewName} not found.")
-        {
-
-        }
-        public ViewModelNotFoundException(string viewName, string message) : base($"ViewModel {viewName} not found.", new Exception(message))
-        {
-        }
-        public ViewModelNotFoundException(string viewName, string message, Exception inner) : base($"ViewModel {viewName} not found.", new Exception(message, inner)) { }
-        protected ViewModelNotFoundException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
 
