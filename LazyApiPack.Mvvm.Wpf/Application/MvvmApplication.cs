@@ -1,57 +1,64 @@
 ﻿using LazyApiPack.Collections;
-using LazyApiPack.Collections.Extensions;
 using LazyApiPack.Localization;
+using LazyApiPack.Mvvm.Wpf.Application.Configuration;
+using LazyApiPack.Mvvm.Wpf.Exceptions;
 using LazyApiPack.Mvvm.Wpf.Model;
 using LazyApiPack.Mvvm.Wpf.Regions;
-using LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters;
 using LazyApiPack.Mvvm.Wpf.Services;
 using LazyApiPack.Mvvm.Wpf.Stores;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.DirectoryServices.ActiveDirectory;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace LazyApiPack.Mvvm.Wpf.Application
 {
-
+    /// <summary>
+    /// Contains the logic of the mvvm application.
+    /// </summary>
     public abstract class MvvmApplication : System.Windows.Application, IDisposable
     {
-        public static MvvmApplication Navigation { get => (MvvmApplication)Current; }
-        protected record ViewModelTypeInfo(string RelativeName, string FullName, bool SupportsParameter, bool SupportsModel);
-        protected record ViewTypeInfo(string RelativeName, string FullName);
-        //private class MvvmApplicationMessageEventArgs : EventArgs
-        //{
-        //    public MvvmApplicationMessageEventArgs(MvvmModule sender, string moduleId, string messageId, object message)
-        //    {
-        //        Sender = sender;
-        //        ModuleId = moduleId;
-        //        MessageId = messageId;
-        //        Message = message;
-        //    }
-        //   public MvvmModule Sender { get; private set; }
-        //    public string ModuleId { get; private set; }
-
-        //    public string MessageId { get; private set; }
-        //    public object Message { get; private set; }
-        //}
-        //private delegate void MvvmApplicationMessageDelegate(object sender,  MvvmApplicationMessageEventArgs e);
-        //private event MvvmApplicationMessageDelegate OnApplicationMessageReceived;
+        /// <summary>
+        /// The current shell window instance.
+        /// </summary>
         private IWindowTemplate? _shellWindow;
+        /// <summary>
+        /// The current splash screen window instance.
+        /// </summary>
         private ISplashScreenWindowTemplate? _splashScreenWindow;
+        /// <summary>
+        /// All loaded modules.
+        /// </summary>
+        private List<MvvmModule> _modules = new();
+        /// <summary>
+        /// All known viewmodels.
+        /// </summary>
+        private Dictionary<Type, ViewModelTypeInfo> _viewModels = new();
+        /// <summary>
+        /// All known views.
+        /// </summary>
+        private Dictionary<Type, ViewTypeInfo> _views = new();
+        /// <summary>
+        /// All known stores (Interface / Instance).
+        /// </summary>
+        private Dictionary<Type, Store> _stores = new();
+        /// <summary>
+        /// All known application services (Interface / Instance)
+        /// </summary>
+        private Dictionary<Type, AppService> _appServices = new();
+        /// <summary>
+        /// All known region adapters.
+        /// </summary>
         private List<IRegionAdapter> _regionAdapters = new();
 
-        private Dictionary<Type, AppService> _appServices = new();
-        private Dictionary<Type, Store> _stores = new();
-        private List<MvvmModule> _modules = new();
-        private Dictionary<Type, ViewTypeInfo> _views = new();
-        private Dictionary<Type, ViewModelTypeInfo> _viewModels = new();
-        private Dictionary<Type, IWindowTemplate> _openWindows = new();
+        protected record ViewModelTypeInfo(string RelativeName, string FullName);
+        protected record ViewTypeInfo(string RelativeName, string FullName);
 
+        /// <summary>
+        /// Gets the current application instance.
+        /// </summary>
+        public static new MvvmApplication Navigation { get => (MvvmApplication)Current; }
 
+        /// <summary>
+        /// Scaffolds the application and runs it.
+        /// </summary>
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -105,6 +112,32 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             _shellWindow.Show();
 
         }
+
+        /// <summary>
+        /// Fetches the configuration for the scaffolding process.
+        /// </summary>
+        protected abstract void OnSetup(MvvmApplicationConfiguration configuration);
+        /// <summary>
+        /// Indicates that the application is fully loaded and ready.
+        /// </summary>
+        protected virtual void OnSetupComplete() { }
+        /// <summary>
+        /// Indicates that the localization system is initialized and ready.
+        /// </summary>
+        protected virtual void OnLocalizationInitialized(ILocalizationService service) { }
+        /// <summary>
+        /// Is called when another module messages the application.
+        /// </summary>
+        /// <param name="sender">Module that sent the message.</param>
+        /// <param name="moduleId">Id of the calling module.</param>
+        /// <param name="messageId">Id of the message.</param>
+        /// <param name="message">The actual payload.</param>
+        protected virtual void OnMessageReceived(MvvmModule? sender, string? moduleId, string? messageId, object? message) { }
+
+
+        /// <summary>
+        /// Loads a single module into the application.
+        /// </summary>
         private void LoadModule(MvvmModule module)
         {
             _modules.Add(module);
@@ -113,33 +146,30 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                 _appServices.Add(service.Key, service.Value);
             }
 
-            foreach(var view in GetTypeDictionary(module.Configuration.ViewNamespaces, (type, relativeNs) => new ViewTypeInfo(relativeNs, type.FullName ?? type.Name)))
+            foreach (var view in GetTypeDictionary(module.Configuration.ViewNamespaces, (type, relativeNs) => new ViewTypeInfo(relativeNs, type.FullName ?? type.Name)))
             {
                 _views.Add(view.Key, view.Value);
             }
 
-            foreach (var viewModel in GetTypeDictionary(module.Configuration.ViewModelNamespaces, (type, relativeNs) =>
-            {
-                var interfaces = type.GetInterfaces();
-                return new ViewModelTypeInfo(
-                                        relativeNs,
-                                        type.FullName ?? type.Name,
-                                        interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISupportParameter<>)),
-                                        interfaces.Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISupportModel<>)));
-            }))
+            foreach (var viewModel in GetTypeDictionary(module.Configuration.ViewModelNamespaces,
+                (type, relativeNs) => new ViewModelTypeInfo(relativeNs, type.FullName ?? type.Name)))
             {
                 _viewModels.Add(viewModel.Key, viewModel.Value);
-
             }
 
             foreach (var adapter in module.Configuration.RegionAdapters)
             {
-                _regionAdapters.Add((IRegionAdapter)Activator.CreateInstance(adapter));
+                _regionAdapters.Add((IRegionAdapter)Activator.CreateInstance(adapter)
+                    ?? throw new NullReferenceException($"Creation of adapter {adapter.FullName} for module {module.ModuleId} returned null."));
             }
 
             module.OnModuleLoaded();
             module.OnActivated();
         }
+
+        /// <summary>
+        /// Gets all modules and submodules that are added to the application.
+        /// </summary>
         private void GetModulesRecursive(List<Type> moduleTypes, MvvmModule? parentModule, ref Dictionary<Type, MvvmModule> loadedModules)
         {
             loadedModules = loadedModules ?? new Dictionary<Type, MvvmModule>();
@@ -169,20 +199,31 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                 GetModulesRecursive(inst.Configuration.Modules, inst, ref loadedModules);
             }
         }
-       
-        
-        protected abstract void OnSetup(MvvmApplicationConfiguration configuration);
-        protected virtual void OnSetupComplete() { }
-        protected virtual void OnLocalizationInitialized(ILocalizationService service) { }
-        protected virtual void OnMessageReceived(MvvmModule? sender, string? moduleId, string? messageId, object? message) { }
-
 
         #region Navigation
+        /// <summary>
+        /// Navigates to the viewmodel.
+        /// </summary>
+        /// <typeparam name="TViewModel">The viewmodel to navigate to.</typeparam>
+        /// <param name="region">The region in which the view should be displayed.</param>
+        /// <param name="parameter">The parameter for the viewmodel.</param>
+        /// <param name="model">The model for the viewmodel.</param>
+        /// <param name="isModal">Indicates, if the application should wait for the view to be closed.</param>
+        /// <returns>The created viewmodel.</returns>
         public TViewModel NavigateTo<TViewModel>(string region, object? parameter = null, object? model = null, bool isModal = false)
         {
             return (TViewModel)NavigateTo(typeof(TViewModel), region, parameter, model, isModal);
         }
 
+        /// <summary>
+        /// Navigates to the viewmodel.
+        /// </summary>
+        /// <param name="viewModelName">The viewmodel to navigate to.</param>
+        /// <param name="region">The region in which the view should be displayed.</param>
+        /// <param name="parameter">The parameter for the viewmodel.</param>
+        /// <param name="model">The model for the viewmodel.</param>
+        /// <param name="isModal">Indicates, if the application should wait for the view to be closed.</param>
+        /// <returns>The created viewmodel.</returns>
         public object NavigateTo(string viewModelName, string region, object? parameter = null, object? model = null, bool isModal = false)
         {
             if (!_viewModels.Any(m => string.Compare(m.Value.RelativeName, viewModelName) == 0))
@@ -201,33 +242,24 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             if (viewItems.Count() > 1)
             {
                 // If duplicate model names, use full namespace
-                // TODO: Don't just replace ViewModels with Views, because ViewModels could also be the name of the module
                 viewItems = _views.Where(v => v.Value.FullName == GetViewNamespace(viewModelName));
             }
-            
+
             var view = CreateObjectWithDependencyInjection(viewItems.First().Key);
             return NavigateTo(viewModel, view, region, model, parameter, isModal);
 
         }
 
-        private string GetViewNamespace(string viewModelNamespace)
-        {
-            var viewModelName = viewModelNamespace.Substring(viewModelNamespace.LastIndexOf(".") + 1);
-            var @namespace = viewModelNamespace.Substring(0, viewModelNamespace.LastIndexOf("."));
-
-            var viewName = viewModelName.Substring(0, viewModelName.Length - "Model".Length);
-            var viewNamespace = viewModelNamespace.Substring(0, viewModelNamespace.LastIndexOf("ViewModels")) + "Views";
-
-            return viewNamespace + "." + viewName;
-
-
-        }
-        public object NavigateTo(Type viewModelType, string region, object? parameter = null, object? model = null, bool isModal = false)
-        {
-            var view = GetAssociatedView(viewModelType) ?? throw new ViewNotFoundException($"The view for the model {viewModelType.FullName} was not found.");
-            return NavigateTo(viewModelType, view, region, model, parameter, isModal);
-
-        }
+        /// <summary>
+        /// Navigates to the viewmodel.
+        /// </summary>
+        /// <param name="viewType">The view that should be used for the viewmodel.</param>
+        /// <param name="viewModelType">The viewmodel to navigate to</param>
+        /// <param name="region">THe region in which the view should be displayed.</param>
+        /// <param name="parameter">The parameter for the viewmodel.</param>
+        /// <param name="model">The model for the viewmodel.</param>
+        /// <param name="isModal">Indicates, if the application should wait for the view to be closed.</param>
+        /// <returns>The created viewmodel.</returns>
         public object NavigateTo(Type viewModelType, Type viewType, string region, object? model = null, object? parameter = null, bool isModal = false)
         {
             var viewModel = CreateObjectWithDependencyInjection(viewModelType);
@@ -235,9 +267,20 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             return NavigateTo(viewModel, view, region, model, parameter, isModal);
         }
 
+        /// <summary>
+        /// Navigates to the viewmodel.
+        /// </summary>
+        /// <param name="viewModel">The viewmodel to navigate to.</param>
+        /// <param name="view">The view that should be used.</param>
+        /// <param name="region">THe region in which the view should be displayed.</param>
+        /// <param name="parameter">The parameter for the viewmodel.</param>
+        /// <param name="model">The model for the viewmodel.</param>
+        /// <param name="isModal">Indicates, if the application should wait for the view to be closed.</param>
+        /// <returns>The created viewmodel.</returns>
         private object NavigateTo(object viewModel, object view, string region, object? model, object? parameter, bool isModal)
         {
-            if (viewModel is ISupportModel m) {
+            if (viewModel is ISupportModel m)
+            {
                 m.Model = model;
             }
             if (viewModel is ISupportParameter p)
@@ -252,7 +295,42 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             RegionManager.NavigateTo(view, region, isModal);
             return viewModel;
         }
+        /// <summary>
+        /// Navigates to the viewmodel.
+        /// </summary>
+        /// <param name="viewModelType">The viewmodel to navigate to.</param>
+        /// <param name="region">THe region in which the view should be displayed.</param>
+        /// <param name="parameter">The parameter for the viewmodel.</param>
+        /// <param name="model">The model for the viewmodel.</param>
+        /// <param name="isModal">Indicates, if the application should wait for the view to be closed.</param>
+        /// <returns>The created viewmodel.</returns>
+        public object NavigateTo(Type viewModelType, string region, object? parameter = null, object? model = null, bool isModal = false)
+        {
+            var view = _views.First(v => v.Value.FullName == viewModelType.FullName.Substring(0, viewModelType.FullName.Length - "Model".Length));
+            return NavigateTo(viewModelType, view, region, model, parameter, isModal);
 
+        }
+        /// <summary>
+        /// Gets the namespace of a view for a given viewmodel
+        /// </summary>
+        /// <param name="viewModelNamespace">The viewmodel namespace</param>
+        /// <example>My.Application.ViewModels.MyViewModel results in My.Application.Views.MyView</example>
+        private string GetViewNamespace(string viewModelNamespace)
+        {
+            var viewModelName = viewModelNamespace.Substring(viewModelNamespace.LastIndexOf(".") + 1);
+            var viewName = viewModelName.Substring(0, viewModelName.Length - "Model".Length);
+            var viewNamespace = viewModelNamespace.Substring(0, viewModelNamespace.LastIndexOf("ViewModels")) + "Views";
+
+            return $"{viewNamespace}.{viewName}";
+
+        }
+
+        /// <summary>
+        /// Shows the application splash screen.
+        /// </summary>
+        /// <param name="progressTitle">Title (eg. Starting Application)</param>
+        /// <param name="progressDescription">Description (eg. Loading Modules)</param>
+        /// <param name="progressPercentage">Progress in percent (0 - 1)</param>
         public void ShowSplashScreen(string progressTitle, string progressDescription, double? progressPercentage = null)
         {
             if (!_splashScreenWindow.IsVisible)
@@ -264,6 +342,9 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             _splashScreenWindow.ProgressPercentage = progressPercentage;
         }
 
+        /// <summary>
+        /// Hides the application splash screen.
+        /// </summary>
         public void HideSplashScreen()
         {
             if (_splashScreenWindow.IsVisible)
@@ -272,11 +353,14 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             }
         }
 
-        //public void UpdateSplashScreen(string progressTitle, string progressDescription, double? progressPercentage = null)
-        //{
-        //    ShowSplashScreen(progressTitle, progressDescription, progressPercentage);
-        //}
-
+        /// <summary>
+        /// Sends a message to a module.
+        /// </summary>
+        /// <param name="sender">Module that sent the message.</param>
+        /// <param name="moduleId">Id of the receiving module.</param>
+        /// <param name="messageId">Id of the message (custom).</param>
+        /// <param name="message">Payload</param>
+        /// <returns>True, if the message was sent, false, if the module was not found. (Does not indicate whether the receiving module has processed the message!)</returns>
         public bool SendMessage(MvvmModule sender, string moduleId, string messageId, object message)
         {
             if (moduleId != null)
@@ -301,18 +385,35 @@ namespace LazyApiPack.Mvvm.Wpf.Application
         }
         #endregion
 
-
         #region Mvvm Object creation
+        /// <summary>
+        /// Gets a service for a specific service interface.
+        /// </summary>
+        /// <typeparam name="TServiceType">Interface for that service.</typeparam>
+        /// <returns>An instance of the service implementation.</returns>
         public TServiceType GetService<TServiceType>()
         {
             return (TServiceType)GetService(typeof(TServiceType));
         }
+
+        /// <summary>
+        /// Gets a service for a specific service interface.
+        /// </summary>
+        /// <param name="serviceType">Interface for that service.</param>
+        /// <returns>An instance of the service implementation.</returns>
         public object GetService(Type serviceType)
         {
             return _appServices[serviceType].GetInstance()
                ?? throw new NullReferenceException(
                    $"Service implementation {serviceType.FullName} ist not registered.");
         }
+        /// <summary>
+        /// Creates an object with dependency injection.
+        /// </summary>
+        /// <param name="type">Type of the object.</param>
+        /// <returns>An instance of an object that uses dependency injection.</returns>
+        /// <exception cref="NotSupportedException">The object has more than one or no public constructors.</exception>
+        /// <exception cref="InvalidOperationException">The object can not be created because not all services are known by the application.</exception>
         public object CreateObjectWithDependencyInjection(Type type)
         {
 #if DEBUG
@@ -355,23 +456,16 @@ namespace LazyApiPack.Mvvm.Wpf.Application
             return ctor.Invoke(instances);
 
         }
-        public Type GetAssociatedView(Type viewModel)
-        {
-            throw new NotImplementedException();
-            //var viewModelNs = _viewModels[viewModel];
-            //return _views.FirstOrDefault(v => v.Value.RelativeNamespace == viewModelNs.RelativeNamespace).Key;
-        }
+
         #endregion
 
-        //#region Internal Configuration
-        //private void ConfigureRegionsInternal(RegionAdapterConfiguration configuration)
-        //{
-        //    configuration.Map<ContentControl, ContentControlRegionAdapter>();
-        //    configuration.Map<TabControl, TabControlRegionAdapter>();
-        //}
-        //#endregion
-
         #region Reflection
+        /// <summary>
+        /// Gets the types from a specific namespace within the app domain.
+        /// </summary>
+        /// <typeparam name="ClassType">Types that are within the namespace.</typeparam>
+        /// <param name="namespace">Namespace to be searched.</param>
+        /// <returns>The types that are within the given namespace.</returns>
         private static IEnumerable<Type> GetTypesFrom<ClassType>(string? @namespace = null)
         {
             return AppDomain.CurrentDomain.GetAssemblies()
@@ -381,15 +475,22 @@ namespace LazyApiPack.Mvvm.Wpf.Application
                             (@namespace == null || (t.Namespace?.StartsWith(@namespace) ?? false)) &&
                             typeof(ClassType).IsAssignableFrom(t)));
         }
-        private Dictionary<Type, TKey> GetTypeDictionary<TKey>(IEnumerable<string> namespaces, Func<Type, string, TKey> getKey)
+
+        /// <summary>
+        /// Gets a list of types from the given namespaces grouped by a key value (Relative Namespace and Type)
+        /// </summary>
+        /// <typeparam name="TValue">Type of the key</typeparam>
+        /// <param name="namespaces">List of namespaces to be looked in.</param>
+        /// <param name="getValue">Method that converts the relative namespace and type into a value</param>
+        /// <returns></returns>
+        private Dictionary<Type, TValue> GetTypeDictionary<TValue>(IEnumerable<string> namespaces, Func<Type, string, TValue> getValue)
         {
-            return new Dictionary<Type, TKey>(
-                new Dictionary<Type, TKey>(namespaces.SelectMany(n =>
+            return new Dictionary<Type, TValue>(
+                new Dictionary<Type, TValue>(namespaces.SelectMany(n =>
                     GetTypesFrom<object>(n)
-                    .Select(t => new KeyValuePair<Type, TKey>(t, getKey(t, GetRelativeNamespace(t, n))))))
+                    .Select(t => new KeyValuePair<Type, TValue>(t, getValue(t, t.Name)))))
                 );
         }
-        private string GetRelativeNamespace(Type type, string fullNamespace) => type.Name;
 
         #endregion
 
@@ -397,8 +498,6 @@ namespace LazyApiPack.Mvvm.Wpf.Application
         /// Signals if the application is currently loading and a loading screen should be displayed.
         /// </summary>
         public BoolList IsBusy = new BoolList();
-
-
 
         #region IDisposable
         public void Dispose()

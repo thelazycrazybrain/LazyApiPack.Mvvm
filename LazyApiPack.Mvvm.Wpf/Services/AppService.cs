@@ -3,6 +3,9 @@ using LazyApiPack.Mvvm.Wpf.Application;
 
 namespace LazyApiPack.Mvvm.Wpf.Services
 {
+    /// <summary>
+    /// Encapsulation of an application service.
+    /// </summary>
     public class AppService : IDisposable
     {
         private readonly Type _interfaceType;

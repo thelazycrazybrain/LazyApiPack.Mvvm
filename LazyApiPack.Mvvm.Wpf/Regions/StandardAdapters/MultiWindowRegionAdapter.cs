@@ -3,6 +3,11 @@ using System.Windows;
 
 namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters
 {
+    /// <summary>
+    /// Provides a region adapter to display windows and modal dialogues.
+    /// </summary>
+    /// <example><Window rgn:RegionManager.RegionName="ModalRegion" rgn:RegionManager.DialogWindowType="{x:Type local:DialogWindow}"></Window>.</example>
+    /// <remarks>This class requires the DialogWindowType</remarks>
     public class MultiWindowRegionAdapter : RegionAdapter<Window>
     {
         Dictionary<object, IWindowTemplate> _activeWindows = new();

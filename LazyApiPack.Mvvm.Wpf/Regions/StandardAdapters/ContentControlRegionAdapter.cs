@@ -3,6 +3,9 @@ using System.Windows.Controls;
 
 namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters
 {
+    /// <summary>
+    /// Provides a region adapter for a content control.
+    /// </summary>
     public class ContentControlRegionAdapter : RegionAdapter<ContentControl>
     {
         public override void AddView(object view, bool isModal, Type dialogType, UIElement presenter)

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace LazyApiPack.Mvvm.Wpf.Stores
 {
+    /// <summary>
+    /// Encapsulates an application store.
+    /// </summary>
     public class Store
     {
         public Store(Type storeType)
@@ -35,7 +33,10 @@ namespace LazyApiPack.Mvvm.Wpf.Stores
                 }
             }
         }
-
+        /// <summary>
+        /// Gets the instance of the store or creates one.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">If the store has been destroyed.</exception>
         public virtual object GetInstance()
         {
             WeakReference<object?> instance = null;

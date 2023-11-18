@@ -1,4 +1,4 @@
-﻿namespace LazyApiPack.Mvvm.Wpf.Application
+﻿namespace LazyApiPack.Mvvm.Wpf.Exceptions
 {
     [Serializable]
     public class ViewModelNotFoundException : Exception

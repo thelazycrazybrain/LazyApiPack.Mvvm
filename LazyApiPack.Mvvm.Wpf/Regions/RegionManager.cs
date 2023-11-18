@@ -11,18 +11,30 @@ using System.Windows;
 
 namespace LazyApiPack.Mvvm.Wpf.Regions
 {
-
+    /// <summary>
+    /// Provides functionality to navigate with regions.
+    /// </summary>
     public class RegionManager : DependencyObject
     {
         private record RegionMapping(IRegionAdapter RegionAdapter, UIElement UIElement, Type DialogPresenter);
         private static Dictionary<string, RegionMapping> _activeRegions = new();
         private static List<IRegionAdapter> _regionAdapters;
+        /// <summary>
+        /// Passes the region adapters from the application by reference.
+        /// </summary>
+        /// <param name="regionAdapters">The list of region adapters as a reference.</param>
         internal static void Initialize(ref List<IRegionAdapter> regionAdapters)
         {
             _regionAdapters = regionAdapters;
         }
-
-        public static void NavigateTo(object view, string regionName, bool isModal)
+        /// <summary>
+        /// Navigates to a specific region.
+        /// </summary>
+        /// <param name="view">The view that is navigated to.</param>
+        /// <param name="regionName">The region name that the view is displayed in.</param>
+        /// <param name="isModal">Indicates if the view blocks the rest of the application.</param>
+        /// <remarks>Not to be used by the user. Use MvvmApplication.Navigation.NavigateTo() instead.</remarks>
+        internal static void NavigateTo(object view, string regionName, bool isModal)
         {
             if (_activeRegions.ContainsKey(regionName))
             {
@@ -30,6 +42,9 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
             }
         }
 
+        /// <summary>
+        /// Name of the region.
+        /// </summary>
         public static readonly DependencyProperty RegionNameProperty =
             DependencyProperty.RegisterAttached(
             "RegionName",
@@ -37,6 +52,9 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
             typeof(RegionManager),
             new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.AffectsRender, OnRegionNameChanged));
 
+        /// <summary>
+        /// Type of the window that is displayed when navigated to.
+        /// </summary>
         public static readonly DependencyProperty DialogWindowTypeProperty =
             DependencyProperty.RegisterAttached(
             "DialogWindowType",
@@ -86,20 +104,33 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
 
 
         }
-
+        /// <summary>
+        /// Name of the region.
+        /// </summary>
         public static string GetRegionName(UIElement target) =>
             (string)target.GetValue(RegionNameProperty);
 
-
+        /// <summary>
+        /// Name of the region.
+        /// </summary>
         public static void SetRegionName(UIElement target, string regionName) =>
             target.SetValue(RegionNameProperty, regionName);
 
+        /// <summary>
+        /// Type of the window that is displayed when navigated to.
+        /// </summary>
         public static Type GetDialogWindowType(UIElement target) =>
             (Type)target.GetValue(DialogWindowTypeProperty);
 
+        /// <summary>
+        /// Type of the window that is displayed when navigated to.
+        /// </summary>
         public static void SetDialogWindowType(UIElement target, Type dialogWindowType) =>
             target.SetValue(DialogWindowTypeProperty, dialogWindowType);
 
+        /// <summary>
+        /// Gets the dialog window type.
+        /// </summary>
         public static Type GetDialogWindowType(string region) => _activeRegions[region].DialogPresenter;
     }
 

@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LazyApiPack.Mvvm.Wpf.Model
+﻿namespace LazyApiPack.Mvvm.Wpf.Model
 {
+    /// <summary>
+    /// Indicates, that the viewmodel exposes a parameter property
+    /// </summary>
     public interface ISupportParameter
     {
         object? Parameter { get; set; }
     }
+
+    /// <summary>
+    /// Indicates, that the viewmodel exposes a parameter property
+    /// </summary>
     public interface ISupportParameter<TParameter> : ISupportModel
     {
         TParameter? Parameter { get; set; }

@@ -14,7 +14,6 @@
         /// Description of the progress (eg. ModuleA or Loading x of y).
         /// </summary>
         string? ProgressDescription { get; set; }
-
         /// <summary>
         /// Gets or sets the progress in percent. If null, no progress status is known.
         /// </summary>

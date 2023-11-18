@@ -5,6 +5,9 @@ using System.Windows.Controls;
 
 namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters
 {
+    /// <summary>
+    /// Provides an adapter to create closeable tabs on a tabcontrol.
+    /// </summary>
     public class CloseableTabControlRegionAdapter : RegionAdapter<TabControl>
     {
         public override void AddView(object view, bool isModal, Type dialogType, UIElement presenter)
