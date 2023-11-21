@@ -22,7 +22,13 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
         private static List<IRegionAdapter> _regionAdapters;
         static RegionManager()
         {
-            MvvmApplication.Instance.RegionManager = new RegionManager();
+            try
+            {
+                MvvmApplication.Instance.RegionManager = new RegionManager();
+            } catch
+            {
+                Debugger.Break();
+            }
         }
         /// <summary>
         /// Passes the region adapters from the application by reference.

@@ -18,13 +18,15 @@ The framework is currently under development. Breaking changes may occur!
 The application derives from `MvvmApplication` and needs the `OnSetup` method overridden.
 
 ```cs
-public partial class App : MvvmApplication
+public partial class App : Application
 {
     public App() : base()
     {
-                
+      MainWindow = (Window)MvvmApp.Setup();
     }
+}
 
+public class MvvmApp : MvvmApplication {
     protected override void OnSetup(MvvmApplicationConfiguration configuration)
     {
         configuration
@@ -69,8 +71,8 @@ public class NeuralFireworksModule : MvvmModule
     }
     public override void OnSetupComplete()
     {
-        MvvmApplication.Navigation.NavigateTo("InterpreterViewModel", "ModalRegion", null, null);
-        MvvmApplication.Navigation.NavigateTo("DebugViewModel", "Main", null, null);
+        MvvmApplication.Instance.NavigateTo("InterpreterViewModel", "ModalRegion", null, null);
+        MvvmApplication.Instance.NavigateTo("DebugViewModel", "Main", null, null);
 
     }
 }

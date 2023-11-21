@@ -17,10 +17,7 @@ namespace LazyApiPack.Mvvm.Application
     /// </summary>
     public class MvvmApplication : IDisposable
     {
-        private MvvmApplication()
-        {
-
-        }
+        
         /// <summary>
         /// The current shell window instance.
         /// </summary>
@@ -75,8 +72,17 @@ namespace LazyApiPack.Mvvm.Application
         /// True, if the application is set up
         /// </summary>
         private static bool _isSetUp;
-        private IWindowTemplate SetupInternal()
+
+        /// <summary>
+        /// Scaffolds the application and runs it.
+        /// </summary>
+        public IWindowTemplate Setup()
         {
+            if (_isSetUp)
+            {
+                throw new InvalidOperationException("Application is already set up");
+            }
+            Instance = this;
             var config = new MvvmApplicationConfiguration();
             OnSetup(config);
             var loadedModules = new Dictionary<Type, MvvmModule>();
@@ -126,18 +132,6 @@ namespace LazyApiPack.Mvvm.Application
 
             _shellWindow.Show();
             return _shellWindow;
-        }
-        /// <summary>
-        /// Scaffolds the application and runs it.
-        /// </summary>
-        public static IWindowTemplate Setup()
-        {
-            if (_isSetUp)
-            {
-                throw new InvalidOperationException("Application is already set up");
-            }
-            Instance = new MvvmApplication();
-            return Instance.SetupInternal();
 
         }
 

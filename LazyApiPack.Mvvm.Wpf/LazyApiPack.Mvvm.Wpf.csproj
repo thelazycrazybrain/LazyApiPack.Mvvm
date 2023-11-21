@@ -15,7 +15,6 @@
 		<FileVersion>0.0.6</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageProjectUrl>https://github.com/thelazycrazybrain/LazyApiPack.Mvvm</PackageProjectUrl>
-		<PackageReadmeFile>ReadMe.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/thelazycrazybrain/LazyApiPack.Mvvm.git</RepositoryUrl>
 		<PackageTags>mvvm;pattern;viewmodel;mvm;wpf;services;serviceinjection;injection;</PackageTags>
 		<PackageReleaseNotes>Ported to .net core</PackageReleaseNotes>
