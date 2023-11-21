@@ -1,4 +1,4 @@
-﻿using LazyApiPack.Mvvm.Wpf.Model.BaseImpl;
+﻿using LazyApiPack.Mvvm.Model.BaseImpl;
 using LazyApiPack.Mvvm.Wpf.Tests.Models;
 using System;
 using System.Collections.Generic;

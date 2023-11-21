@@ -1,5 +1,5 @@
-﻿using LazyApiPack.Mvvm.Wpf.Application;
-using LazyApiPack.Mvvm.Wpf.Application.Configuration;
+﻿using LazyApiPack.Mvvm.Application;
+using LazyApiPack.Mvvm.Application.Configuration;
 
 namespace LazyApiPack.Mvvm.Debug.Module
 {

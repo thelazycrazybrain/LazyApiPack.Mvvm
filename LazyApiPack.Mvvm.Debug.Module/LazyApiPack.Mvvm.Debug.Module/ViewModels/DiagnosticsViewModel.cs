@@ -1,6 +1,6 @@
 ﻿using LazyApiPack.Mvvm.Debug.Module.Services;
-using LazyApiPack.Mvvm.Wpf.Application;
-using LazyApiPack.Mvvm.Wpf.Model.BaseImpl;
+using LazyApiPack.Mvvm.Application;
+using LazyApiPack.Mvvm.Model.BaseImpl;
 using LazyApiPack.Wpf.Utils.Commands;
 
 namespace LazyApiPack.Mvvm.Debug.Module.Models
@@ -25,7 +25,7 @@ namespace LazyApiPack.Mvvm.Debug.Module.Models
         {
             try
             {
-                MvvmApplication.Navigation.ShowSplashScreen("Loading diagnostics", null);
+                MvvmApplication.Instance.ShowSplashScreen("Loading diagnostics", null);
 
                 if (Model == null)
                 {
@@ -38,7 +38,7 @@ namespace LazyApiPack.Mvvm.Debug.Module.Models
             }
             finally
             {
-                MvvmApplication.Navigation.HideSplashScreen();
+                MvvmApplication.Instance.HideSplashScreen();
             }
         }
     }

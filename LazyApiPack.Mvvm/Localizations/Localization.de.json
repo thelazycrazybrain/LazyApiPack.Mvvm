@@ -1,0 +1,21 @@
+﻿{
+	"Priority": 2147483647,
+	"ModuleId": "LazyApiPack.Mvvm",
+	"LanguageCode": "de",
+	"IsDefault": false,
+	"LocalizedLanguageName": "Deutsch",
+	"DefaultLanguageName": "German",
+	
+	"IsRightToLeft": false,
+	"Translations": {
+		"Messages": {
+		},
+		"Descriptions": {
+			"InitializeLocalization": "Sprachen werden geladen",
+			"InitializeUi": "Oberfläche wird geladen"
+		},
+		"Captions": {
+			"LoadingModules": "Lade Module..."
+		}
+	}
+}

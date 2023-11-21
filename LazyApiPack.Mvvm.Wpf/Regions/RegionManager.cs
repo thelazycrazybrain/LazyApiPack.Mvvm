@@ -1,4 +1,5 @@
-﻿using LazyApiPack.Mvvm.Wpf.Application;
+﻿using LazyApiPack.Mvvm.Application;
+using LazyApiPack.Mvvm.Regions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,16 +15,26 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
     /// <summary>
     /// Provides functionality to navigate with regions.
     /// </summary>
-    public class RegionManager : DependencyObject
+    public class RegionManager : DependencyObject, IRegionManager
     {
         private record RegionMapping(IRegionAdapter RegionAdapter, UIElement UIElement, Type DialogPresenter);
         private static Dictionary<string, RegionMapping> _activeRegions = new();
         private static List<IRegionAdapter> _regionAdapters;
+        static RegionManager()
+        {
+            try
+            {
+                MvvmApplication.Instance.RegionManager = new RegionManager();
+            } catch
+            {
+                Debugger.Break();
+            }
+        }
         /// <summary>
         /// Passes the region adapters from the application by reference.
         /// </summary>
         /// <param name="regionAdapters">The list of region adapters as a reference.</param>
-        internal static void Initialize(ref List<IRegionAdapter> regionAdapters)
+        public void Initialize(ref List<IRegionAdapter> regionAdapters)
         {
             _regionAdapters = regionAdapters;
         }
@@ -34,7 +45,7 @@ namespace LazyApiPack.Mvvm.Wpf.Regions
         /// <param name="regionName">The region name that the view is displayed in.</param>
         /// <param name="isModal">Indicates if the view blocks the rest of the application.</param>
         /// <remarks>Not to be used by the user. Use MvvmApplication.Navigation.NavigateTo() instead.</remarks>
-        internal static void NavigateTo(object view, string regionName, bool isModal)
+        public void NavigateTo(object view, string regionName, bool isModal)
         {
             if (_activeRegions.ContainsKey(regionName))
             {
