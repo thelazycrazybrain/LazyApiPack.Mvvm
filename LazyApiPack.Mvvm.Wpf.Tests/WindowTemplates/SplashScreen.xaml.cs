@@ -1,4 +1,4 @@
-﻿using LazyApiPack.Mvvm.Wpf.Application;
+﻿using LazyApiPack.Mvvm.Application;
 using LazyApiPack.Mvvm.Wpf.Regions;
 using System;
 using System.Collections.Generic;
