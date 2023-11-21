@@ -88,7 +88,7 @@ namespace LazyApiPack.Mvvm.Application
             var loadedModules = new Dictionary<Type, MvvmModule>();
             GetModulesRecursive(config.Modules, null, ref loadedModules);
 
-            RegionManager.Initialize(ref _regionAdapters);
+           
             if (config.SplashScreen == null)
             {
                 throw new ArgumentNullException(nameof(config.ShellWindow));

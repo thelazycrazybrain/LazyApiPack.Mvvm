@@ -1,4 +1,5 @@
 using LazyApiPack.Mvvm.Application;
+using LazyApiPack.Mvvm.Application.Configuration;
 using LazyApiPack.Mvvm.Tests.Services;
 using LazyApiPack.Mvvm.Wpf.Regions;
 using LazyApiPack.Mvvm.Wpf.Tests.Models;
@@ -8,12 +9,21 @@ using System.IO;
 using System.Reflection;
 
 namespace LazyApiPack.Mvvm.Wpf.Tests {
+
+    public class MvvmApp : MvvmApplication
+    {
+        protected override void OnSetup(MvvmApplicationConfiguration configuration)
+        {
+            base.OnSetup(configuration);// TODO:
+        }
+    }
     [Apartment(ApartmentState.STA)]
     public class MvvmTests {
         [SetUp]
 
         public void Setup() {
-            MvvmApplication.Setup();
+            var app = new MvvmApp();
+            app.Setup();
             var root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var _lPath = Path.Combine(root, "Localizations");
             throw new NotImplementedException("This test needs rework since the bootstrapping logic of the Mvvm framework has changed with update 0.0.2.");

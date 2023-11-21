@@ -22,7 +22,8 @@ public partial class App : Application
 {
     public App() : base()
     {
-      MainWindow = (Window)MvvmApp.Setup();
+      var app = new MvvmApp();
+      MainWindow = (Window)app.Setup();
     }
 }
 
