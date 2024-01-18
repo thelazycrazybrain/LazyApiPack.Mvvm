@@ -29,16 +29,17 @@ namespace LazyApiPack.Mvvm.Localization
                 var prop = obj.GetType().GetProperty("DataContext", BindingFlags.Instance | BindingFlags.Public);
                 if (prop != null)
                 {
-                    prop.GetValue(obj);
+                    return prop.GetValue(obj);
                 }
             }
-            object? model;
-            if ((model = obj.GetType().GetProperty(nameof(ISupportModel<object>.Model), BindingFlags.Public | BindingFlags.Instance)
-                     ?.GetValue(obj)) != null)
-            {
-                return model;
-            }
             return null;
+            //object? model;
+            //if ((model = obj.GetType().GetProperty(nameof(ISupportModel<object>.Model), BindingFlags.Public | BindingFlags.Instance)
+            //         ?.GetValue(obj)) != null)
+            //{
+            //    return model;
+            //}
+            //return null;
         }
 
         /// <summary>

@@ -1,0 +1,19 @@
+﻿{
+  "ModuleId": "LazyApiPack.Mvvm.Wpf.Showcase.Module",
+  "LanguageCode": "en",
+  "IsDefault": true,
+  "Priority": 0,
+  "DefaultLanguageName": "English",
+  "LocalizedLanguageName": "English",
+  "IsRightToLeft": false,
+  "Translations": {
+    "Group1": {
+      "Text1": "Save",
+      "Text2": "Open"
+    },
+    "Group2": {
+      "Text1": "Do you want to save the file?",
+      "Text2": "Do you want to open the file?"
+    }
+  }
+}

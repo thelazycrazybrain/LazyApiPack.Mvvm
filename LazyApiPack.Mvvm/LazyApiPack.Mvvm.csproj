@@ -29,9 +29,11 @@
 		<EmbeddedResource Include="Localizations\Localization.en.json" WithCulture="false" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="LazyApiPack.Collections" Version="0.1.0" />
 		<PackageReference Include="LazyApiPack.Localization" Version="0.2.0" />
 		<PackageReference Include="LazyApiPack.Utils" Version="0.0.3.3" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\LazyApiPack.Collections\LazyApiPack.Collections\LazyApiPack.Collections.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="ReadMe.md" Pack="True" PackagePath="\" />

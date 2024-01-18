@@ -12,12 +12,9 @@ using System.Windows;
 
 namespace LazyApiPack.Mvvm.Application
 {
-    /// <summary>
-    /// Contains the logic of the mvvm application.
-    /// </summary>
-    public class MvvmApplication : IDisposable
+    public abstract class MvvmApplication : MvvmModule
     {
-        
+        private MvvmApplicationConfiguration _appConfiguration;
         /// <summary>
         /// The current shell window instance.
         /// </summary>
@@ -83,19 +80,21 @@ namespace LazyApiPack.Mvvm.Application
                 throw new InvalidOperationException("Application is already set up");
             }
             Instance = this;
-            var config = new MvvmApplicationConfiguration();
-            OnSetup(config);
+            _appConfiguration = new MvvmApplicationConfiguration();
+            OnSetup(_appConfiguration);
             var loadedModules = new Dictionary<Type, MvvmModule>();
-            GetModulesRecursive(config.Modules, null, ref loadedModules);
 
-           
-            if (config.SplashScreen == null)
+
+            GetModulesRecursive(_appConfiguration.Modules, null, ref loadedModules);
+
+
+            if (_appConfiguration.SplashScreen == null)
             {
-                throw new ArgumentNullException(nameof(config.ShellWindow));
+                throw new ArgumentNullException(nameof(_appConfiguration.ShellWindow));
             }
 
-            _splashScreenWindow = CreateObjectWithDependencyInjection(config.SplashScreen) as ISplashScreenWindowTemplate
-                ?? throw new InvalidCastException($"Can not convert SplashScreen of type {config.SplashScreen.FullName} to {typeof(ISplashScreenWindowTemplate).FullName}.");
+            _splashScreenWindow = CreateObjectWithDependencyInjection(_appConfiguration.SplashScreen) as ISplashScreenWindowTemplate
+                ?? throw new InvalidCastException($"Can not convert SplashScreen of type {_appConfiguration.SplashScreen.FullName} to {typeof(ISplashScreenWindowTemplate).FullName}.");
 
             ShowSplashScreen("Loading modules", null);
 
@@ -112,20 +111,20 @@ namespace LazyApiPack.Mvvm.Application
                 "LazyApiPack.Mvvm.Localizations.Localization.de.json",
                 "LazyApiPack.Mvvm.Localizations.Localization.en.json" });
 
-            loc.AddLocalizations(config.LocalizationFiles);
+            loc.AddLocalizations(_appConfiguration.LocalizationFiles);
 
             ShowSplashScreen(loc.GetTranslation("Captions", "LoadingModules") ?? "Loading modules...", loc.GetTranslation("Descriptions", "InitializeLocalization"));
             OnLocalizationInitialized(loc);
 
             ShowSplashScreen("Loading application", loc.GetTranslation("Descriptions", "InitializeUi"));
-            _shellWindow = CreateObjectWithDependencyInjection(config.ShellWindow) as IWindowTemplate
-               ?? throw new InvalidCastException($"Can not convert ShellWindow of type {config.ShellWindow.FullName} to {typeof(IWindowTemplate).FullName}.");
+            _shellWindow = CreateObjectWithDependencyInjection(_appConfiguration.ShellWindow) as IWindowTemplate
+               ?? throw new InvalidCastException($"Can not convert ShellWindow of type {_appConfiguration.ShellWindow.FullName} to {typeof(IWindowTemplate).FullName}.");
 
             HideSplashScreen();
             OnSetupComplete();
             foreach (var module in loadedModules.Values)
             {
-                module.OnSetupComplete();
+                module.OnModuleSetupComplete();
             }
 
             OnSetupComplete();
@@ -195,13 +194,17 @@ namespace LazyApiPack.Mvvm.Application
         private void GetModulesRecursive(List<Type> moduleTypes, MvvmModule? parentModule, ref Dictionary<Type, MvvmModule> loadedModules)
         {
             loadedModules = loadedModules ?? new Dictionary<Type, MvvmModule>();
-            // if parentmodule is null, the module is part of an application
-            // so if the application does not contain any modules, throw an exception.
-            if (parentModule == null && (moduleTypes == null || moduleTypes.Count == 0))
+            //// if parentmodule is null, the module is part of an application
+            //// so if the application does not contain any modules, throw an exception.
+            //if (parentModule == null && (moduleTypes == null || moduleTypes.Count == 0))
+            //{
+            //    throw new InvalidOperationException("This application does not contain any modules.");
+            //}
+            if (parentModule == null)
             {
-                throw new InvalidOperationException("This application does not contain any modules.");
+                loadedModules.Add(this.GetType(), this);
+                this.SetupModule(this, null);
             }
-
             foreach (var module in moduleTypes)
             {
                 // ensure, that the module is not loaded twice but is in relation with its parent module
@@ -217,7 +220,7 @@ namespace LazyApiPack.Mvvm.Application
                 var inst = Activator.CreateInstance(module) as MvvmModule
                     ?? throw new NullReferenceException($"Module {module.FullName} could not be instantiated.");
                 loadedModules.Add(module, inst);
-                inst.Setup(this, parentModule);
+                inst.SetupModule(this, parentModule);
                 GetModulesRecursive(inst.Configuration.Modules, inst, ref loadedModules);
             }
         }
@@ -530,27 +533,6 @@ namespace LazyApiPack.Mvvm.Application
         /// </summary>
         public BoolList IsBusy = new BoolList();
 
-        #region IDisposable
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~MvvmApplication()
-        {
-            Dispose(false);
-        }
-
-        protected virtual void Dispose(bool isDisposing)
-        {
-            throw new NotImplementedException();
-            //foreach (var service in _appServices)
-            //{
-            //    service.Value?.Dispose();
-            //}
-        }
-        #endregion
     }
 
 

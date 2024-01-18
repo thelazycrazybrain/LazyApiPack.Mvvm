@@ -19,6 +19,5 @@
         /// </summary>
         public List<string> LocalizationFiles { get; internal set; } = new();
         public List<LocalizationNamespace> LocalizationNamespaces { get; internal set; } = new();
-
     }
 }

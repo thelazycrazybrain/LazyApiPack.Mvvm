@@ -1,0 +1,115 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    >
+    <!-- Theme: Base: Bright, Accent: Autumn -->
+    <!-- Base Colors -->
+    <Color x:Key="ForegroundColor">Black</Color>
+    <Color x:Key="ForegroundColor.Disabled">#bebebe</Color>
+    <Color x:Key="ForegroundColor.Selected">#FF000000</Color>
+    <Color x:Key="BackgroundColor">White</Color>
+    <Color x:Key="PrimaryColor" >White</Color>
+    <Color x:Key="PrimaryColor80" >#FF333333</Color>
+    <Color x:Key="PrimaryColor60" >#FF555555</Color>
+    <Color x:Key="PrimaryColor40" >#FF777777</Color>
+    <Color x:Key="PrimaryColor20" >#FF999999</Color>
+    <Color x:Key="TransparentColor">#00000000</Color>
+    <Color x:Key="SemiTransparentColor">#30FFFFFF</Color>
+
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource PrimaryColor}" />
+    <SolidColorBrush x:Key="PrimaryBrush80" Color="{DynamicResource PrimaryColor80}" />
+    <SolidColorBrush x:Key="PrimaryBrush60" Color="{DynamicResource PrimaryColor60}" />
+    <SolidColorBrush x:Key="PrimaryBrush40" Color="{DynamicResource PrimaryColor40}" />
+    <SolidColorBrush x:Key="PrimaryBrush20" Color="{DynamicResource PrimaryColor20}" />
+    <SolidColorBrush x:Key="SemiTransparentBrush" Color="{DynamicResource SemiTransparentColor}" />
+    <DrawingBrush x:Key="TransparentCheckBoardBrush" Stretch="None" TileMode="Tile" 
+                  Viewport="0,0,4,4" ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="{DynamicResource PrimaryBrush40}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,4,4" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{DynamicResource PrimaryBrush20}">
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <RectangleGeometry Rect="0,0,2,2" />
+                            <RectangleGeometry Rect="2,2,2,2" />
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <!-- Accent Colors -->
+    <Color x:Key="AccentColorA" >#8FEB1C</Color>
+    <Color x:Key="AccentColorA80" >#a6eb50</Color>
+    <Color x:Key="AccentColorA60" >#bdeb83</Color>
+    <Color x:Key="AccentColorA40" >#d4ebb7</Color>
+
+    <Color x:Key="AccentColorB" >#D5F21B</Color>
+    <Color x:Key="AccentColorB80" >#DCF251</Color>
+    <Color x:Key="AccentColorB60" >#E4F287</Color>
+    <Color x:Key="AccentColorB40" >#EBF2BC</Color>
+
+    <Color x:Key="AccentColorC" >#DBD223</Color>
+    <Color x:Key="AccentColorC80" >#DBD451</Color>
+    <Color x:Key="AccentColorC60" >#DBD77F</Color>
+    <Color x:Key="AccentColorC40" >#DBD9AD</Color>
+
+    <Color x:Key="AccentColorD" >#F2D41B</Color>
+    <Color x:Key="AccentColorD80" >#F2DC51</Color>
+    <Color x:Key="AccentColorD60" >#F2E387</Color>
+    <Color x:Key="AccentColorD40" >#F2EBBC</Color>
+
+    <Color x:Key="AccentColorE" >#EBBD23</Color>
+    <Color x:Key="AccentColorE80" >#EBC854</Color>
+    <Color x:Key="AccentColorE60" >#EBD486</Color>
+    <Color x:Key="AccentColorE40" >#EBDFB7</Color>
+
+    <SolidColorBrush x:Key="AccentBrushA" Color="{DynamicResource AccentColorA}" />
+    <SolidColorBrush x:Key="AccentBrushA80" Color="{DynamicResource AccentColorA80}" />
+    <SolidColorBrush x:Key="AccentBrushA60" Color="{DynamicResource AccentColorA60}" />
+    <SolidColorBrush x:Key="AccentBrushA40" Color="{DynamicResource AccentColorA40}" />
+
+    <SolidColorBrush x:Key="AccentBrushB" Color="{DynamicResource AccentColorB}" />
+    <SolidColorBrush x:Key="AccentBrushB80" Color="{DynamicResource AccentColorB80}" />
+    <SolidColorBrush x:Key="AccentBrushB60" Color="{DynamicResource AccentColorB60}" />
+    <SolidColorBrush x:Key="AccentBrushB40" Color="{DynamicResource AccentColorB40}" />
+
+    <SolidColorBrush x:Key="AccentBrushC" Color="{DynamicResource AccentColorC}" />
+    <SolidColorBrush x:Key="AccentBrushC80" Color="{DynamicResource AccentColorC80}" />
+    <SolidColorBrush x:Key="AccentBrushC60" Color="{DynamicResource AccentColorC60}" />
+    <SolidColorBrush x:Key="AccentBrushC40" Color="{DynamicResource AccentColorC40}" />
+
+    <SolidColorBrush x:Key="AccentBrushD" Color="{DynamicResource AccentColorD}" />
+    <SolidColorBrush x:Key="AccentBrushD80" Color="{DynamicResource AccentColorD80}" />
+    <SolidColorBrush x:Key="AccentBrushD60" Color="{DynamicResource AccentColorD60}" />
+    <SolidColorBrush x:Key="AccentBrushD40" Color="{DynamicResource AccentColorD40}" />
+
+    <SolidColorBrush x:Key="AccentBrushE" Color="{DynamicResource AccentColorE}" />
+    <SolidColorBrush x:Key="AccentBrushE80" Color="{DynamicResource AccentColorE80}" />
+    <SolidColorBrush x:Key="AccentBrushE60" Color="{DynamicResource AccentColorE60}" />
+    <SolidColorBrush x:Key="AccentBrushE40" Color="{DynamicResource AccentColorE40}" />
+
+    <!-- Named Colors -->
+    <SolidColorBrush x:Key="TransparentBrush" Color="{DynamicResource TransparentColor}"/>
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+
+    <SolidColorBrush x:Key="BorderBrush" Color="{DynamicResource PrimaryColor20}" />
+    <SolidColorBrush x:Key="Control.BackgroundBrush" Color="{DynamicResource PrimaryColor40}" />
+
+    <SolidColorBrush x:Key="Focused.Foreground" Color="{DynamicResource AccentColorA}"/>
+    <SolidColorBrush x:Key="HoverOver.BackgroundBrush" Color="{DynamicResource PrimaryColor40}"/>
+    <SolidColorBrush x:Key="HoverOver.BorderBrush" Color="{DynamicResource PrimaryColor20}"/>
+    <SolidColorBrush x:Key="Pressed.BackgroundBrush" Color="{DynamicResource AccentColorB}"/>
+    <SolidColorBrush x:Key="Selected.BackgroundBrush" Color="{DynamicResource AccentColorA}" />
+    <SolidColorBrush x:Key="Disabled.BackgroundBrush" Color="{DynamicResource PrimaryColor40}" />
+    <SolidColorBrush x:Key="Disabled.BorderBrush" Color="{DynamicResource PrimaryColor20}" />
+
+</ResourceDictionary>

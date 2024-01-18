@@ -14,6 +14,10 @@ namespace LazyApiPack.Mvvm.Wpf.Regions.StandardAdapters
         Dictionary<object, IWindowTemplate> _activeWindows = new();
         public override void AddView(object view, bool isModal, Type dialogType, object presenter)
         {
+            if (dialogType == null)
+            {
+                throw new NullReferenceException("To use the MultiWindowRegionAdapter, you must specify a DialogType");
+            }
             var wdw = (IWindowTemplate)Activator.CreateInstance(dialogType);
             wdw.Content = view;
             wdw.Closed += Wdw_Closed;

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0-windows</TargetFramework>
+	  <Nullable>enable</Nullable>
+	  <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LazyApiPack.Localization.Wpf" Version="0.2.0" />
+    <PackageReference Include="LazyApiPack.Logger" Version="0.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LazyApiPack.Mvvm.Wpf.Showcase.Interfaces\LazyApiPack.Mvvm.Wpf.Showcase.Interfaces.csproj" />
+    <ProjectReference Include="..\LazyApiPack.Mvvm.Wpf\LazyApiPack.Mvvm.Wpf.csproj" />
+    <ProjectReference Include="..\ReportingModule\ReportingModule.csproj" />
+  </ItemGroup>
+
+
+</Project>

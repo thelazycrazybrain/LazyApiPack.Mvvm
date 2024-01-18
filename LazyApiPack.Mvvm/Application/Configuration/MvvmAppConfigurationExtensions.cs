@@ -1,4 +1,5 @@
 ﻿using LazyApiPack.Collections.Extensions;
+using LazyApiPack.Mvvm.Regions;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -72,7 +73,5 @@ namespace LazyApiPack.Mvvm.Application.Configuration
             return config;
 
         }
-
-
     }
 }

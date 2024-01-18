@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LazyApiPack.Mvvm.Wpf.Showcase.Interfaces\LazyApiPack.Mvvm.Wpf.Showcase.Interfaces.csproj" />
+    <ProjectReference Include="..\LazyApiPack.Mvvm.Wpf.Showcase.Module\LazyApiPack.Mvvm.Wpf.Showcase.Module.csproj" />
+    <ProjectReference Include="..\LazyApiPack.Mvvm.Wpf\LazyApiPack.Mvvm.Wpf.csproj" />
+    <ProjectReference Include="..\LazyApiPack.Mvvm\LazyApiPack.Mvvm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LazyApiPack.Wpf.Theme" Version="0.0.3.1" />
+  </ItemGroup>
+
+</Project>

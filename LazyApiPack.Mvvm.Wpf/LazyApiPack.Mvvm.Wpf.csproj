@@ -23,10 +23,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LazyApiPack.Wpf.Controls" Version="0.0.2.1" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<ProjectReference Include="..\..\LazyApiPack.Wpf.Controls\LazyApiPack.Wpf.Controls\LazyApiPack.Wpf.Controls.csproj" />
 		<ProjectReference Include="..\LazyApiPack.Mvvm\LazyApiPack.Mvvm.csproj" />
 	</ItemGroup>
 	<ItemGroup>

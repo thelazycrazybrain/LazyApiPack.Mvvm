@@ -3,7 +3,7 @@ using LazyApiPack.Mvvm.Application.Configuration;
 
 namespace LazyApiPack.Mvvm.Application
 {
-    public abstract class MvvmModule
+    public abstract class MvvmModule : IDisposable
     {
         /// <summary>
         /// Id of the module (eg. net.thelazycrazybrain.MyModule)
@@ -27,12 +27,12 @@ namespace LazyApiPack.Mvvm.Application
         /// </summary>
         /// <param name="application">Current application.</param>
         /// <param name="parentModule">Parent module.</param>
-        internal void Setup(MvvmApplication application, MvvmModule? parentModule)
+        internal void SetupModule(MvvmApplication application, MvvmModule? parentModule)
         {
             Application = application;
             ParentModules.Add(parentModule);
             Configuration = new MvvmModuleConfiguration();
-            OnSetup(Configuration);
+            OnModuleSetup(Configuration);
         }
 
         /// <summary>
@@ -54,11 +54,11 @@ namespace LazyApiPack.Mvvm.Application
         /// <summary>
         /// Scaffolds the module.
         /// </summary>
-        public abstract void OnSetup(MvvmModuleConfiguration configuration);
+        public abstract void OnModuleSetup(MvvmModuleConfiguration configuration);
         /// <summary>
         /// Indicates that the application setup has completed and the application is ready.
         /// </summary>
-        public virtual void OnSetupComplete() { }
+        public virtual void OnModuleSetupComplete() { }
         /// <summary>
         /// Indicates that the module can now use localization.
         /// </summary>
@@ -71,5 +71,27 @@ namespace LazyApiPack.Mvvm.Application
         /// <param name="messageId">Id of the message (custom).</param>
         /// <param name="message">Payload.</param>
         public virtual void OnMessageReceived(MvvmModule sender, string? moduleId, string messageId, object message) { }
+
+
+        #region IDisposable
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~MvvmModule()
+        {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool isDisposing)
+        {
+            //foreach (var service in _appServices)
+            //{
+            //    service.Value?.Dispose();
+            //}
+        }
+        #endregion
     }
 }

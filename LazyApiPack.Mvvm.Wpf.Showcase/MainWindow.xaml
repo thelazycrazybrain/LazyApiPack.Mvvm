@@ -1,0 +1,39 @@
+﻿<Window x:Class="LazyApiPack.Mvvm.Wpf.Showcase.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LazyApiPack.Mvvm.Wpf.Showcase"
+        
+        xmlns:rgn="clr-namespace:LazyApiPack.Mvvm.Wpf.Regions;assembly=LazyApiPack.Mvvm.Wpf"
+        xmlns:mvvm="clr-namespace:LazyApiPack.Mvvm.Application;assembly=LazyApiPack.Mvvm"
+        xmlns:cnv="clr-namespace:LazyApiPack.Wpf.Utils.Converters;assembly=LazyApiPack.Wpf.Utils"
+        xmlns:Controls="clr-namespace:LazyApiPack.Wpf.Controls;assembly=LazyApiPack.Wpf.Controls"
+        
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"  
+        rgn:RegionManager.RegionName="ModalRegion" 
+        rgn:RegionManager.DialogWindowType="{x:Type local:DialogWindow}">
+    <Window.Resources>
+        <cnv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <DockPanel LastChildFill="True"  Grid.Row="1">
+            <Controls:Sidebar DockPanel.Dock="Left" rgn:RegionManager.RegionName="LeftSidebar"  Width="173" />
+
+            <Controls:Sidebar DockPanel.Dock="Right" rgn:RegionManager.RegionName="RightSidebar"  Width="173" />
+            <TabControl Background="{DynamicResource BackgroundBrush}"  rgn:RegionManager.RegionName="Main"/>
+
+            <Grid x:Name="LoadingOverlay" Visibility="{Binding IsBusy, Source={x:Static mvvm:MvvmApplication.Instance}}" Grid.ColumnSpan="3" Grid.RowSpan="3"/>
+
+
+        </DockPanel>
+        
+
+    </Grid>
+</Window>
